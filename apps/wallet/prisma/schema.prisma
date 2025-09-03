@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Wallet {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @unique
+  customerName String
+  customerEmail String
+  balance    Float    @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  transactions Transaction[]
+}
+
+model Transaction {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  walletId    String     @db.ObjectId
+  userId      String
+  amount      Float
+  type        String     // credit, debit
+  description String
+  timestamp   DateTime   @default(now())
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Relations
+  wallet      Wallet     @relation(fields: [walletId], references: [id])
+}
+
+
