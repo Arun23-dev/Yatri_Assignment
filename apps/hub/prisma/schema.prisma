@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// Admin model for admin users
+model Admin {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  firstName  String
+  lastName   String
+  email      String   @unique
+  password   String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Admin can manage bikes
+  bikeAssignments BikeAssignment[]
+}
+
+// Customer model for regular customers
+model Customer {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  firstName  String
+  lastName   String
+  email      String   @unique
+  password   String
+  phone      String?
+  address    String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Customer relations
+  bikeAssignments BikeAssignment[]
+  chargingSessions ChargingSession[]
+}
+
+model Bike {
+  id         String     @id @default(auto()) @map("_id") @db.ObjectId
+  serialNumber   String           @unique
+  brand          String
+  model          String
+  status         String           @default("AVAILABLE") // AVAILABLE, ASSIGNED, MAINTENANCE, RETIRED
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  // Relations
+  bikeAssignments BikeAssignment[]
+  chargingSessions ChargingSession[]
+}
+
+model BikeAssignment {
+   id         String     @id @default(auto()) @map("_id") @db.ObjectId
+  assignedAt  DateTime  @default(now())
+  returnedAt  DateTime? 
+  assignedBy  String    @db.ObjectId // Admin ID who assigned the bike
+
+  // Relations
+  bike       Bike      @relation(fields: [bikeId], references: [id])
+   bikeId     String @db.ObjectId
+  customer   Customer  @relation(fields: [customerId], references: [id])
+   customerId String @db.ObjectId
+  admin      Admin     @relation(fields: [assignedBy], references: [id])
+}
+
+model ChargingSession {
+  id         String     @id @default(auto()) @map("_id") @db.ObjectId
+  customerId String     @db.ObjectId
+  bikeId     String     @db.ObjectId
+  amount     Float
+  startTime  DateTime
+  endTime    DateTime?
+  status     String     @default("ACTIVE") // ACTIVE, COMPLETED, CANCELLED
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  // Relations
+  customer   Customer   @relation(fields: [customerId], references: [id])
+  bike       Bike       @relation(fields: [bikeId], references: [id])
+}
