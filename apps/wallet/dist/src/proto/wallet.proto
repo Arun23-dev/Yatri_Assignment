@@ -6,72 +6,66 @@ service WalletService {
   rpc CreateWallet(CreateWalletRequest) returns (CreateWalletResponse);
   rpc GetWallet(GetWalletRequest) returns (GetWalletResponse);
   rpc DeductBalance(DeductBalanceRequest) returns (DeductBalanceResponse);
-  rpc DeleteWallet(DeleteWalletRequest) returns (DeleteWalletResponse);
   rpc GetTransactions(GetTransactionsRequest) returns (GetTransactionsResponse);
-  rpc GetChargingSessions(GetChargingSessionsRequest) returns (GetChargingSessionsResponse);
+  rpc CreditBalance(CreditBalanceRequest) returns (CreditBalanceResponse);
+  rpc GetWalletBalance(GetWalletBalanceRequest) returns (GetWalletBalanceResponse);
+  rpc GetWalletSummary(GetWalletSummaryRequest) returns (GetWalletSummaryResponse);
+  rpc DeleteCustomer(DeleteCustomerRequest) returns (DeleteCustomerResponse);
+}
+
+service CustomerService {
+  rpc AddFunds(AddFundsRequest) returns (AddFundsResponse);
+  rpc GetWalletBalance(GetWalletBalanceRequest) returns (GetWalletBalanceResponse);
+  rpc GetTransactions(GetTransactionsRequest) returns (GetTransactionsResponse);
+  rpc GetWalletSummary(GetWalletSummaryRequest) returns (GetWalletSummaryResponse);
+  rpc GetWallet(GetWalletRequest) returns (GetWalletResponse);
+  rpc CreateWallet(CreateWalletRequest) returns (CreateWalletResponse);
+  rpc DeductBalance(DeductBalanceRequest) returns (DeductBalanceResponse);
 }
 
 message CreateWalletRequest {
-  string userId = 1;
-  string customerName = 2;
-  string customerEmail = 3;
+  string customerId = 1;
+  double initialBalance = 2;
 }
 
 message CreateWalletResponse {
   bool success = 1;
   string walletId = 2;
-  string message = 3;
+  double balance = 3;
+  string message = 4;
 }
 
 message GetWalletRequest {
-  string userId = 1;
+  string customerId = 1;
 }
 
 message GetWalletResponse {
   bool success = 1;
   string walletId = 2;
   double balance = 3;
-  string userId = 4;
-  string customerName = 5;
-  string message = 6;
+  string customerId = 4;
+  string message = 5;
 }
 
 message DeductBalanceRequest {
-  string userId = 1;
+  string customerId = 1;
   double amount = 2;
-  string description = 3;
+  string reference = 3;
+  string chargingSessionId = 4;
 }
 
 message DeductBalanceResponse {
   bool success = 1;
   double newBalance = 2;
-  string message = 3;
-}
-
-message DeleteWalletRequest {
-  string userId = 1;
-}
-
-message DeleteWalletResponse {
-  bool success = 1;
-  string message = 2;
-  double balance = 3;
-  bool canDelete = 4;
+  string transactionId = 3;
+  string message = 4;
 }
 
 message GetTransactionsRequest {
-  string userId = 1;
+  string customerId = 1;
   int32 page = 2;
   int32 limit = 3;
-}
-
-message Transaction {
-  string id = 1;
-  string userId = 2;
-  double amount = 3;
   string type = 4;
-  string description = 5;
-  string timestamp = 6;
 }
 
 message GetTransactionsResponse {
@@ -83,27 +77,84 @@ message GetTransactionsResponse {
   string message = 6;
 }
 
-message GetChargingSessionsRequest {
-  string userId = 1;
-  int32 page = 2;
-  int32 limit = 3;
-}
-
-message ChargingSession {
+message Transaction {
   string id = 1;
-  string userId = 2;
-  string bikeId = 3;
-  double amount = 4;
-  string startTime = 5;
-  string endTime = 6;
-  string status = 7;
+  string customerId = 2;
+  double amount = 3;
+  string type = 4;
+  string description = 5;
+  string reference = 6;
+  string chargingSessionId = 7;
+  string timestamp = 8;
 }
 
-message GetChargingSessionsResponse {
+message CreditBalanceRequest {
+  string customerId = 1;
+  double amount = 2;
+  string paymentMethod = 3;
+  string reference = 4;
+  string description = 5;
+}
+
+message CreditBalanceResponse {
   bool success = 1;
-  repeated ChargingSession sessions = 2;
-  int32 total = 3;
-  int32 page = 4;
-  int32 limit = 5;
-  string message = 6;
+  double newBalance = 2;
+  string transactionId = 3;
+  string message = 4;
+}
+
+message GetWalletBalanceRequest {
+  string customerId = 1;
+}
+
+message GetWalletBalanceResponse {
+  bool success = 1;
+  double balance = 2;
+  string message = 3;
+}
+
+message GetWalletSummaryRequest {
+  string customerId = 1;
+}
+
+message GetWalletSummaryResponse {
+  bool success = 1;
+  WalletSummary summary = 2;
+  string message = 3;
+}
+
+message WalletSummary {
+  string walletId = 1;
+  string customerId = 2;
+  double balance = 3;
+  int32 totalTransactions = 4;
+  double totalCredits = 5;
+  double totalDebits = 6;
+  string lastTransactionDate = 7;
+}
+
+message DeleteCustomerRequest {
+  string customerId = 1;
+}
+
+message DeleteCustomerResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message AddFundsRequest {
+  string customerId = 1;
+  double amount = 2;
+  string paymentMethod = 3;
+  string reference = 4;
+  string description = 5;
+}
+
+message AddFundsResponse {
+  bool success = 1;
+  double newBalance = 2;
+  string transactionId = 3;
+  string message = 4;
+  string paymentMethod = 5;
+  string reference = 6;
 }

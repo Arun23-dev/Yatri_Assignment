@@ -3,78 +3,216 @@ export declare class WalletController {
     private readonly walletService;
     constructor(walletService: WalletService);
     createWallet(data: {
-        userId: string;
-        customerName: string;
-        customerEmail: string;
+        customerId: string;
+        initialBalance?: number;
     }): Promise<{
         success: boolean;
         walletId: string;
         message: string;
+        balance?: undefined;
+        error?: undefined;
+    } | {
+        success: boolean;
+        walletId: string;
+        balance: number;
+        message: string;
+        error?: undefined;
+    } | {
+        success: boolean;
+        walletId: string;
+        message: string;
+        error: any;
+        balance?: undefined;
     }>;
     getWallet(data: {
-        userId: string;
+        customerId: string;
     }): Promise<{
         success: boolean;
         walletId: string;
         balance: number;
-        userId: string;
+        customerId: string;
         customerName: string;
+        customerEmail: string;
         message: string;
+        error?: undefined;
+    } | {
+        success: boolean;
+        walletId: string;
+        balance: number;
+        customerId: string;
+        message: string;
+        customerName?: undefined;
+        customerEmail?: undefined;
+        error?: undefined;
+    } | {
+        success: boolean;
+        walletId: string;
+        balance: number;
+        customerId: string;
+        customerName: string;
+        customerEmail: string;
+        message: string;
+        error: any;
     }>;
     deductBalance(data: {
-        userId: string;
+        customerId: string;
         amount: number;
-        description: string;
+        reference?: string;
+        chargingSessionId?: string;
     }): Promise<{
         success: boolean;
         newBalance: number;
+        transactionId: string;
         message: string;
-    }>;
-    deleteWallet(data: {
-        userId: string;
-    }): Promise<{
+        requiredAmount?: undefined;
+        currentBalance?: undefined;
+        chargingSessionId?: undefined;
+        error?: undefined;
+    } | {
         success: boolean;
+        newBalance: number;
+        transactionId: string;
         message: string;
-        balance: number;
-        canDelete: boolean;
+        requiredAmount: number;
+        currentBalance: number;
+        chargingSessionId?: undefined;
+        error?: undefined;
+    } | {
+        success: boolean;
+        newBalance: number;
+        transactionId: string;
+        message: string;
+        chargingSessionId: string;
+        requiredAmount?: undefined;
+        currentBalance?: undefined;
+        error?: undefined;
+    } | {
+        success: boolean;
+        newBalance: number;
+        transactionId: string;
+        message: string;
+        error: any;
+        requiredAmount?: undefined;
+        currentBalance?: undefined;
+        chargingSessionId?: undefined;
     }>;
     getTransactions(data: {
-        userId: string;
-        page: number;
-        limit: number;
+        customerId: string;
+        page?: number;
+        limit?: number;
+        type?: string;
     }): Promise<{
         success: boolean;
         transactions: {
             id: string;
-            userId: string;
+            customerId: string;
             amount: number;
             type: string;
             description: string;
+            reference: string;
+            chargingSessionId: string;
             timestamp: string;
         }[];
         total: number;
         page: number;
         limit: number;
         message: string;
-    }>;
-    getChargingSessions(data: {
-        userId: string;
-        page: number;
-        limit: number;
-    }): Promise<{
+        error?: undefined;
+    } | {
         success: boolean;
-        sessions: {
-            id: string;
-            userId: string;
-            bikeId: string;
-            amount: number;
-            startTime: string;
-            endTime: string;
-            status: string;
-        }[];
+        transactions: never[];
         total: number;
         page: number;
         limit: number;
         message: string;
+        error: any;
+    }>;
+    creditBalance(data: {
+        customerId: string;
+        amount: number;
+        paymentMethod: string;
+        reference?: string;
+        description?: string;
+    }): Promise<{
+        success: boolean;
+        newBalance: number;
+        transactionId: string;
+        message: string;
+        paymentMethod?: undefined;
+        reference?: undefined;
+        error?: undefined;
+    } | {
+        success: boolean;
+        newBalance: number;
+        transactionId: string;
+        message: string;
+        paymentMethod: string;
+        reference: string | null;
+        error?: undefined;
+    } | {
+        success: boolean;
+        newBalance: number;
+        transactionId: string;
+        message: string;
+        error: any;
+        paymentMethod?: undefined;
+        reference?: undefined;
+    }>;
+    getWalletBalance(data: {
+        customerId: string;
+    }): Promise<{
+        success: boolean;
+        balance: number;
+        message: string;
+        error?: undefined;
+    } | {
+        success: boolean;
+        balance: number;
+        message: string;
+        error: any;
+    }>;
+    getWalletSummary(data: {
+        customerId: string;
+    }): Promise<{
+        success: boolean;
+        summary: null;
+        message: string;
+        error?: undefined;
+    } | {
+        success: boolean;
+        summary: {
+            walletId: string;
+            customerId: string;
+            balance: number;
+            totalTransactions: number;
+            totalCredits: number;
+            totalDebits: number;
+            lastTransactionDate: string;
+        };
+        message: string;
+        error?: undefined;
+    } | {
+        success: boolean;
+        summary: null;
+        message: string;
+        error: any;
+    }>;
+    deleteCustomer(data: {
+        customerId: string;
+    }): Promise<{
+        success: boolean;
+        message: string;
+        balance?: undefined;
+        error?: undefined;
+    } | {
+        success: boolean;
+        message: string;
+        balance: number;
+        error?: undefined;
+    } | {
+        success: boolean;
+        message: string;
+        error: any;
+        balance?: undefined;
     }>;
 }

@@ -19,22 +19,28 @@ let WalletController = class WalletController {
         this.walletService = walletService;
     }
     async createWallet(data) {
-        return this.walletService.createWallet(data.userId, data.customerName, data.customerEmail);
+        return this.walletService.createWallet(data.customerId, data.initialBalance || 0);
     }
     async getWallet(data) {
-        return this.walletService.getWallet(data.userId);
+        return this.walletService.getWallet(data.customerId);
     }
     async deductBalance(data) {
-        return this.walletService.deductBalance(data.userId, data.amount, data.description);
-    }
-    async deleteWallet(data) {
-        return this.walletService.deleteWallet(data.userId);
+        return this.walletService.deductBalance(data.customerId, data.amount, data.chargingSessionId || '', data.reference);
     }
     async getTransactions(data) {
-        return this.walletService.getTransactions(data.userId, data.page, data.limit);
+        return this.walletService.getTransactions(data.customerId, data.page || 1, data.limit || 10, data.type);
     }
-    async getChargingSessions(data) {
-        return this.walletService.getChargingSessions(data.userId, data.page, data.limit);
+    async creditBalance(data) {
+        return this.walletService.addFunds(data.customerId, data.amount, data.paymentMethod, data.reference, data.description);
+    }
+    async getWalletBalance(data) {
+        return this.walletService.getWalletBalance(data.customerId);
+    }
+    async getWalletSummary(data) {
+        return this.walletService.getWalletSummary(data.customerId);
+    }
+    async deleteCustomer(data) {
+        return this.walletService.deleteCustomer(data.customerId);
     }
 };
 exports.WalletController = WalletController;
@@ -57,23 +63,35 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], WalletController.prototype, "deductBalance", null);
 __decorate([
-    (0, microservices_1.GrpcMethod)('WalletService', 'DeleteWallet'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], WalletController.prototype, "deleteWallet", null);
-__decorate([
     (0, microservices_1.GrpcMethod)('WalletService', 'GetTransactions'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], WalletController.prototype, "getTransactions", null);
 __decorate([
-    (0, microservices_1.GrpcMethod)('WalletService', 'GetChargingSessions'),
+    (0, microservices_1.GrpcMethod)('WalletService', 'CreditBalance'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], WalletController.prototype, "getChargingSessions", null);
+], WalletController.prototype, "creditBalance", null);
+__decorate([
+    (0, microservices_1.GrpcMethod)('WalletService', 'GetWalletBalance'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], WalletController.prototype, "getWalletBalance", null);
+__decorate([
+    (0, microservices_1.GrpcMethod)('WalletService', 'GetWalletSummary'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], WalletController.prototype, "getWalletSummary", null);
+__decorate([
+    (0, microservices_1.GrpcMethod)('WalletService', 'DeleteCustomer'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], WalletController.prototype, "deleteCustomer", null);
 exports.WalletController = WalletController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [wallet_service_1.WalletService])

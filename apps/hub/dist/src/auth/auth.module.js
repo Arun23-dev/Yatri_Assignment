@@ -24,7 +24,7 @@ exports.AuthModule = AuthModule = __decorate([
         imports: [
             passport_1.PassportModule,
             jwt_1.JwtModule.register({
-                secret: process.env.JWT_SECRET || 'your-secret-key',
+                secret: process.env.JWT_SECRET || 'yatritask-super-secret-jwt-key-2024',
                 signOptions: { expiresIn: '24h' },
             }),
             prisma_module_1.PrismaModule,

@@ -9,9 +9,7 @@ datasource db {
 
 model Wallet {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String   @unique
-  customerName String
-  customerEmail String
+  customerId String   @unique  // This should match the Customer ID from Hub
   balance    Float    @default(0)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -23,10 +21,12 @@ model Wallet {
 model Transaction {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
   walletId    String     @db.ObjectId
-  userId      String
+  customerId  String     // This should match the Customer ID from Hub
   amount      Float
   type        String     // credit, debit
   description String
+  reference   String?    // For linking to charging sessions or other external references
+  chargingSessionId String? // Link to Hub's charging session
   timestamp   DateTime   @default(now())
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt

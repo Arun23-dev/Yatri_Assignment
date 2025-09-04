@@ -1,98 +1,428 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 💰 YatriTask Wallet App
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A NestJS microservice for managing customer wallets, transactions, and financial operations. This service provides both REST API endpoints and gRPC services for seamless integration with the Hub application.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 📋 Features
 
-## Description
+### 💳 Wallet Management
+- **Wallet Creation**: Automatic wallet creation for new customers
+- **Balance Management**: Real-time balance tracking and updates
+- **Wallet Operations**: Credit, debit, and balance queries
+- **Wallet Analytics**: Comprehensive wallet statistics and reporting
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### 💰 Transaction Management
+- **Transaction Recording**: Log all financial transactions
+- **Transaction History**: Detailed transaction history with filtering
+- **Transaction Types**: Support for credit, debit, and various payment methods
+- **Transaction Linking**: Link transactions to charging sessions
 
-## Project setup
+### 🔐 Authentication & Security
+- **JWT Authentication**: Secure token-based authentication
+- **Customer Authorization**: Customer-specific wallet access
+- **Admin Authorization**: Full admin control over all wallets
+- **Token Validation**: Cross-service token verification
 
-```bash
-$ npm install
+### 🌐 API Services
+- **REST API**: HTTP endpoints for customer and admin operations
+- **gRPC Service**: High-performance microservice communication
+- **Swagger Documentation**: Interactive API documentation
+- **Health Checks**: Service health monitoring
+
+### 📊 Analytics & Reporting
+- **Wallet Analytics**: Balance trends and transaction patterns
+- **Customer Analytics**: Individual customer financial insights
+- **Admin Dashboard**: Comprehensive financial reporting
+- **Transaction Analytics**: Transaction volume and type analysis
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 18+
+- MongoDB database
+- npm or yarn
+
+### 1. Environment Setup
+
+Create `.env` file in `apps/wallet/`:
+```env
+DATABASE_URL="mongodb://localhost:27017/yatritask_wallet"
+JWT_SECRET="yatritask-super-secret-jwt-key-2024"
+WALLET_GRPC_URL="localhost:5000"
+WALLET_HTTP_PORT="3002"
 ```
 
-## Compile and run the project
-
+### 2. Install Dependencies
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+cd apps/wallet
+npm install
 ```
 
-## Run tests
-
+### 3. Database Setup
 ```bash
-# unit tests
-$ npm run test
+# Generate Prisma client
+npx prisma generate
 
-# e2e tests
-$ npm run test:e2e
+# Push schema to database
+npx prisma db push
 
-# test coverage
-$ npm run test:cov
+# Seed sample data
+npm run seed
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
+### 4. Start the Application
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Development mode (HTTP + gRPC)
+npm run start:dev
+
+# HTTP only
+npm run start:http
+
+# gRPC only
+npm run start:grpc
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 5. Access the Application
+- **HTTP API Base URL**: http://localhost:3002
+- **Swagger Documentation**: http://localhost:3002/api
+- **gRPC Service**: localhost:5000
+- **Health Check**: http://localhost:3002/health
 
-## Resources
+## 📚 API Documentation
 
-Check out a few resources that may come in handy when working with NestJS:
+### 🔐 Authentication
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+All customer endpoints require JWT authentication. Get a token from the Hub app:
+```http
+POST http://localhost:3001/auth/customer/login
+Content-Type: application/json
 
-## Support
+{
+  "email": "customer@example.com",
+  "password": "password123"
+}
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### 💳 Customer Wallet APIs
 
-## Stay in touch
+#### Get Wallet Balance
+```http
+GET /customer/wallet/balance
+Authorization: Bearer <customer-jwt-token>
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+**Response:**
+```json
+{
+  "success": true,
+  "balance": 150.75,
+  "message": "Wallet balance retrieved successfully"
+}
+```
 
-## License
+#### Get Wallet Summary
+```http
+GET /customer/wallet/summary
+Authorization: Bearer <customer-jwt-token>
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+**Response:**
+```json
+{
+  "success": true,
+  "summary": {
+    "walletId": "wallet_12345",
+    "customerId": "customer_123",
+    "balance": 150.75,
+    "totalTransactions": 15,
+    "totalCredits": 500.00,
+    "totalDebits": 349.25,
+    "lastTransactionDate": "2025-09-04T10:30:00Z"
+  },
+  "message": "Wallet summary retrieved successfully"
+}
+```
+
+#### Add Funds to Wallet
+```http
+POST /customer/add-funds
+Authorization: Bearer <customer-jwt-token>
+Content-Type: application/json
+
+{
+  "amount": 100.00,
+  "paymentMethod": "credit_card",
+  "description": "Monthly top-up"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "newBalance": 250.75,
+  "transactionId": "txn_12345",
+  "message": "Successfully added $100.00 via credit_card",
+  "paymentMethod": "credit_card",
+  "reference": "payment_credit_card_1756959928525"
+}
+```
+
+#### Get Transaction History
+```http
+GET /customer/wallet/transactions?page=1&limit=10&type=debit
+Authorization: Bearer <customer-jwt-token>
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "transactions": [
+    {
+      "id": "txn_12345",
+      "amount": 25.50,
+      "type": "debit",
+      "description": "Charging session payment",
+      "timestamp": "2025-09-04T10:30:00Z",
+      "reference": "charging_session_001"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 15,
+    "totalPages": 2
+  }
+}
+```
+
+#### Get Full Wallet Details
+```http
+GET /customer/wallet
+Authorization: Bearer <customer-jwt-token>
+```
+
+### 👨‍💼 Admin Wallet APIs
+
+#### Get All Wallets (Admin)
+```http
+GET /admin/wallets?page=1&limit=10
+Authorization: Bearer <admin-jwt-token>
+```
+
+#### Get Customer Wallet (Admin)
+```http
+GET /admin/wallets/:customerId
+Authorization: Bearer <admin-jwt-token>
+```
+
+#### Credit Customer Wallet (Admin)
+```http
+POST /admin/wallets/:customerId/credit
+Authorization: Bearer <admin-jwt-token>
+Content-Type: application/json
+
+{
+  "amount": 50.00,
+  "description": "Admin credit",
+  "reference": "admin_credit_001"
+}
+```
+
+#### Debit Customer Wallet (Admin)
+```http
+POST /admin/wallets/:customerId/debit
+Authorization: Bearer <admin-jwt-token>
+Content-Type: application/json
+
+{
+  "amount": 25.00,
+  "description": "Admin debit",
+  "reference": "admin_debit_001"
+}
+```
+
+#### Get All Transactions (Admin)
+```http
+GET /admin/transactions?page=1&limit=20&customerId=customer_123&type=credit
+Authorization: Bearer <admin-jwt-token>
+```
+
+#### Delete Customer Wallet (Admin)
+```http
+DELETE /admin/wallets/:customerId
+Authorization: Bearer <admin-jwt-token>
+```
+
+### 🔌 gRPC Service
+
+The Wallet app exposes gRPC services for integration with the Hub app:
+
+#### Create Wallet
+```protobuf
+rpc CreateWallet(CreateWalletRequest) returns (CreateWalletResponse);
+```
+
+#### Get Wallet Balance
+```protobuf
+rpc GetWalletBalance(GetWalletBalanceRequest) returns (GetWalletBalanceResponse);
+```
+
+#### Deduct Balance
+```protobuf
+rpc DeductBalance(DeductBalanceRequest) returns (DeductBalanceResponse);
+```
+
+#### Get Transactions
+```protobuf
+rpc GetTransactions(GetTransactionsRequest) returns (GetTransactionsResponse);
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+- `DATABASE_URL`: MongoDB connection string
+- `JWT_SECRET`: Secret key for JWT token signing
+- `WALLET_GRPC_URL`: gRPC service URL
+- `WALLET_HTTP_PORT`: HTTP server port
+
+### Database Schema
+- **Wallet**: Customer wallet information
+- **Transaction**: Financial transaction records
+
+### Wallet Model
+```typescript
+{
+  id: string;
+  customerId: string; // Links to Hub Customer
+  balance: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+### Transaction Model
+```typescript
+{
+  id: string;
+  walletId: string;
+  customerId: string;
+  amount: number;
+  type: 'credit' | 'debit';
+  description: string;
+  reference?: string;
+  chargingSessionId?: string; // Links to Hub charging session
+  timestamp: Date;
+}
+```
+
+## 🧪 Testing
+
+### Test Customer APIs
+```bash
+# Get JWT token from Hub
+TOKEN=$(curl -s -X POST http://localhost:3001/auth/customer/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "john.customer@example.com", "password": "customer123"}' \
+  | jq -r '.token')
+
+# Test wallet balance
+curl -H "Authorization: Bearer $TOKEN" \
+  http://localhost:3002/customer/wallet/balance
+
+# Test add funds
+curl -X POST http://localhost:3002/customer/add-funds \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"amount": 100, "paymentMethod": "credit_card", "description": "Test deposit"}'
+```
+
+### Test Admin APIs
+```bash
+# Get admin JWT token from Hub
+ADMIN_TOKEN=$(curl -s -X POST http://localhost:3001/auth/admin/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "admin@yatritask.com", "password": "admin123"}' \
+  | jq -r '.token')
+
+# Test admin wallet operations
+curl -H "Authorization: Bearer $ADMIN_TOKEN" \
+  http://localhost:3002/admin/wallets
+```
+
+## 🚨 Troubleshooting
+
+### Common Issues
+
+1. **JWT Token Required Error**
+   ```bash
+   # Ensure you're using a valid JWT token from Hub app
+   # Check that both apps use the same JWT_SECRET
+   ```
+
+2. **MongoDB Connection Error**
+   ```bash
+   # Start MongoDB
+   sudo systemctl start mongod
+   sudo systemctl status mongod
+   ```
+
+3. **Port Already in Use**
+   ```bash
+   # Kill processes on ports 3002 and 5000
+   sudo lsof -ti:3002 | xargs kill -9
+   sudo lsof -ti:5000 | xargs kill -9
+   ```
+
+4. **gRPC Connection Issues**
+   ```bash
+   # Ensure gRPC service is running
+   # Check WALLET_GRPC_URL environment variable
+   ```
+
+5. **Wallet Not Found**
+   ```bash
+   # Create wallet for customer
+   npm run seed
+   # Or use the create-wallet.js script
+   node create-wallet.js
+   ```
+
+## 📊 Monitoring
+
+The application includes comprehensive logging for:
+- Wallet operations (create, update, delete)
+- Transaction processing
+- Authentication attempts
+- gRPC communication
+- Error handling
+- Performance metrics
+
+## 🔒 Security Features
+
+- **JWT Authentication**: Secure token-based authentication
+- **Input Validation**: Comprehensive DTO validation
+- **CORS Protection**: Cross-origin request protection
+- **Rate Limiting**: API rate limiting (configurable)
+- **SQL Injection Protection**: Prisma ORM protection
+- **Token Type Validation**: Customer vs Admin token validation
+
+## 🔄 Integration with Hub App
+
+The Wallet app integrates with the Hub app through:
+
+1. **Automatic Wallet Creation**: Hub creates wallets when customers register
+2. **Balance Deduction**: Hub deducts balance for charging sessions
+3. **Balance Queries**: Hub fetches wallet balance and transaction history
+4. **Transaction Linking**: Hub links charging sessions to wallet transactions
+
+## 🤝 Contributing
+
+1. Follow NestJS coding standards
+2. Add tests for new features
+3. Update documentation
+4. Use conventional commits
+
+## 📄 License
+
+This project is part of the YatriTask bike rental management system.

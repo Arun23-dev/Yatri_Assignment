@@ -11,6 +11,7 @@ const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const wallet_module_1 = require("./wallet/wallet.module");
 const prisma_module_1 = require("./prisma/prisma.module");
+const customer_module_1 = require("./customer/customer.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -22,6 +23,7 @@ exports.AppModule = AppModule = __decorate([
             }),
             prisma_module_1.PrismaModule,
             wallet_module_1.WalletModule,
+            customer_module_1.CustomerModule,
         ],
     })
 ], AppModule);

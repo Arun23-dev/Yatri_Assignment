@@ -1,0 +1,30 @@
+{
+  "balances": {
+    "68b80a5adfa2e1443088d757": 40
+  },
+  "transactions": {
+    "68b80a5adfa2e1443088d757": [
+      {
+        "id": "mock_txn_1756960458915",
+        "customerId": "68b80a5adfa2e1443088d757",
+        "amount": 20,
+        "type": "credit",
+        "description": "Monthly top-up",
+        "reference": "bank_transfer_12345",
+        "timestamp": "2025-09-04T04:34:18.916Z",
+        "paymentMethod": "credit_card"
+      },
+      {
+        "id": "mock_txn_1756959143008",
+        "customerId": "68b80a5adfa2e1443088d757",
+        "amount": 20,
+        "type": "credit",
+        "description": "Monthly top-up",
+        "reference": "bank_transfer_12345",
+        "timestamp": "2025-09-04T04:12:23.008Z",
+        "paymentMethod": "credit_card"
+      }
+    ]
+  },
+  "lastUpdated": "2025-09-04T04:34:18.917Z"
+}

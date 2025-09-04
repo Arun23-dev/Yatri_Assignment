@@ -294,4 +294,44 @@ export class AuthController {
       timestamp: new Date()
     };
   }
+
+  @Post('verify-token')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ 
+    summary: 'Verify JWT token',
+    description: 'Verifies a JWT token and returns the payload. Used by other microservices.'
+  })
+  @ApiOkResponse({
+    description: 'Token verified successfully',
+    schema: {
+      example: {
+        valid: true,
+        payload: {
+          sub: '68b80a76dfa2e1443088d758',
+          type: 'customer',
+          email: 'alisha@gmail.com',
+          iat: 1756961138,
+          exp: 1757007538
+        }
+      }
+    }
+  })
+  @ApiResponse({ 
+    status: 401, 
+    description: 'Invalid or expired token'
+  })
+  async verifyToken(@Body() body: { token: string }) {
+    try {
+      const payload = await this.customerAuthService.validateToken(body.token);
+      return {
+        valid: true,
+        payload
+      };
+    } catch (error) {
+      return {
+        valid: false,
+        error: error.message
+      };
+    }
+  }
 }

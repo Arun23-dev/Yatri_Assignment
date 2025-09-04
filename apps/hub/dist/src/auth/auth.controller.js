@@ -100,6 +100,21 @@ let AuthController = class AuthController {
             timestamp: new Date()
         };
     }
+    async verifyToken(body) {
+        try {
+            const payload = await this.customerAuthService.validateToken(body.token);
+            return {
+                valid: true,
+                payload
+            };
+        }
+        catch (error) {
+            return {
+                valid: false,
+                error: error.message
+            };
+        }
+    }
 };
 exports.AuthController = AuthController;
 __decorate([
@@ -326,6 +341,37 @@ __decorate([
     __metadata("design:paramtypes", [auth_dto_1.LogoutDto, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "logout", null);
+__decorate([
+    (0, common_1.Post)('verify-token'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Verify JWT token',
+        description: 'Verifies a JWT token and returns the payload. Used by other microservices.'
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        description: 'Token verified successfully',
+        schema: {
+            example: {
+                valid: true,
+                payload: {
+                    sub: '68b80a76dfa2e1443088d758',
+                    type: 'customer',
+                    email: 'alisha@gmail.com',
+                    iat: 1756961138,
+                    exp: 1757007538
+                }
+            }
+        }
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 401,
+        description: 'Invalid or expired token'
+    }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "verifyToken", null);
 exports.AuthController = AuthController = __decorate([
     (0, swagger_1.ApiTags)('auth'),
     (0, common_1.Controller)('auth'),

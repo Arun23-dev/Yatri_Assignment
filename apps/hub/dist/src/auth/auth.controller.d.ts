@@ -15,4 +15,19 @@ export declare class AuthController {
     loginCustomer(body: LoginCustomerDto, res: Response): Promise<CustomerAuthResponseDto>;
     logoutCustomer(body: LogoutDto, res: Response): Promise<ApiResponseDto<void>>;
     logout(body: LogoutDto, res: Response): Promise<ApiResponseDto<void>>;
+    verifyToken(body: {
+        token: string;
+    }): Promise<{
+        valid: boolean;
+        payload: {
+            sub: string;
+            type: string;
+            email: string;
+        };
+        error?: undefined;
+    } | {
+        valid: boolean;
+        error: any;
+        payload?: undefined;
+    }>;
 }

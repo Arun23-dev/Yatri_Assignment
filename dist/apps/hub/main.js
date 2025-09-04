@@ -16644,113 +16644,96 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ChargingSessionsController = void 0;
 const common_1 = __webpack_require__(3);
 const swagger_1 = __webpack_require__(42);
 const charging_sessions_service_1 = __webpack_require__(259);
-const charging_session_dto_1 = __webpack_require__(260);
-const response_dto_1 = __webpack_require__(174);
 const admin_auth_guard_1 = __webpack_require__(175);
 const customer_auth_guard_1 = __webpack_require__(221);
+const charging_session_dto_1 = __webpack_require__(260);
 let ChargingSessionsController = class ChargingSessionsController {
     chargingSessionsService;
     constructor(chargingSessionsService) {
         this.chargingSessionsService = chargingSessionsService;
     }
-    async createChargingSession(body) {
-        return this.chargingSessionsService.createChargingSession({
-            ...body,
-            startTime: new Date(body.startTime),
-            endTime: body.endTime ? new Date(body.endTime) : undefined,
-        });
+    async getAllSessions(page = 1, limit = 10) {
+        return this.chargingSessionsService.findAll(page, limit);
     }
-    async getAllChargingSessions(page = 1, limit = 10) {
-        return this.chargingSessionsService.getAllChargingSessions(page, limit);
-    }
-    async getActiveChargingSessions(page = 1, limit = 10) {
-        return this.chargingSessionsService.getActiveChargingSessions(page, limit);
-    }
-    async getMyChargingSessions(req, page = 1, limit = 10) {
-        return this.chargingSessionsService.getChargingSessionsByCustomerId(req.customer.sub, page, limit);
-    }
-    async getChargingSessionById(id) {
-        return this.chargingSessionsService.getChargingSessionById(id);
-    }
-    async updateChargingSessionStatus(id, body) {
-        return this.chargingSessionsService.updateChargingSessionStatus(id, body.status, body.endTime ? new Date(body.endTime) : undefined);
-    }
-    async searchChargingSessions(query) {
-        return this.chargingSessionsService.searchChargingSessions({
-            q: query.q,
-            status: query.status,
-            customerId: query.customerId,
-            bikeId: query.bikeId,
-            startDate: query.startDate,
-            endDate: query.endDate,
-            page: query.page,
-            limit: query.limit,
-        });
+    async searchChargingSessions(filters) {
+        return this.chargingSessionsService.searchChargingSessions(filters);
     }
     async getChargingSessionStats(period, startDate, endDate) {
         return this.chargingSessionsService.getChargingSessionStats(period, startDate, endDate);
     }
+    async getRevenueAnalytics(period = 'month', groupBy = 'day') {
+        return this.chargingSessionsService.getRevenueAnalytics(period, groupBy);
+    }
+    async getChargingSessionsByCustomer(customerId, page = 1, limit = 10) {
+        return this.chargingSessionsService.getChargingSessionsByCustomer(customerId, page, limit);
+    }
+    async getChargingSessionsByBike(bikeId, page = 1, limit = 10) {
+        return this.chargingSessionsService.getChargingSessionsByBike(bikeId, page, limit);
+    }
+    async getChargingSessionReports(filters) {
+        return this.chargingSessionsService.getChargingSessionReports(filters);
+    }
+    async getAllSessionsAdmin(customerId, bikeId, status, dateRangeStart, dateRangeEnd, page = 1, limit = 10) {
+        return this.chargingSessionsService.getAllSessions({
+            customerId,
+            bikeId,
+            status,
+            dateRangeStart,
+            dateRangeEnd,
+            page,
+            limit,
+        });
+    }
+    async adminEndSession(id, body) {
+        return this.chargingSessionsService.adminEndSession(id, body.endTime ? new Date(body.endTime) : undefined);
+    }
+    async adminGetSessionDetails(id) {
+        return this.chargingSessionsService.adminGetSessionDetails(id);
+    }
+    async getAdminAnalyticsSummary(dateRangeStart, dateRangeEnd) {
+        return this.chargingSessionsService.getAdminAnalyticsSummary(dateRangeStart, dateRangeEnd);
+    }
     async startChargingSession(req, body) {
         return this.chargingSessionsService.startChargingSession(req.customer.sub, body);
     }
-    async endChargingSession(req, id, body) {
+    async endChargingSession(id, req, body) {
         return this.chargingSessionsService.endChargingSession(req.customer.sub, id, body.endTime ? new Date(body.endTime) : undefined);
     }
-    async cancelChargingSession(req, id) {
+    async cancelChargingSession(id, req) {
         return this.chargingSessionsService.cancelChargingSession(req.customer.sub, id);
     }
-    async getCurrentActiveSession(req) {
-        return this.chargingSessionsService.getCurrentActiveSession(req.customer.sub);
+    async getActiveSessions(req) {
+        return this.chargingSessionsService.getActiveSessionsByCustomer(req.customer.sub);
+    }
+    async getMySessions(req, bikeId, page = 1, limit = 10, dateRangeStart, dateRangeEnd) {
+        return this.chargingSessionsService.getMySessions(req.customer.sub, { bikeId, page, limit, dateRangeStart, dateRangeEnd });
+    }
+    async getSessionDetails(id, req) {
+        return this.chargingSessionsService.getSessionDetails(req.customer.sub, id);
+    }
+    async getCustomerAnalytics(req, dateRangeStart, dateRangeEnd) {
+        return this.chargingSessionsService.getCustomerAnalytics(req.customer.sub, dateRangeStart, dateRangeEnd);
     }
 };
 exports.ChargingSessionsController = ChargingSessionsController;
 __decorate([
-    (0, common_1.Post)(),
-    (0, common_1.UseGuards)(admin_auth_guard_1.AdminAuthGuard),
-    (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
-    (0, swagger_1.ApiOperation)({
-        summary: 'Create a new charging session (Admin only)',
-        description: 'Creates a new charging session for a customer and bike. Only admins can create charging sessions.'
-    }),
-    (0, swagger_1.ApiCreatedResponse)({
-        description: 'Charging session created successfully',
-        type: response_dto_1.ChargingSessionResponseDto
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 400,
-        description: 'Bad request - Invalid input data'
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 401,
-        description: 'Unauthorized - Admin token required'
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 404,
-        description: 'Not found - Customer or bike not found'
-    }),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_b = typeof charging_session_dto_1.CreateChargingSessionDto !== "undefined" && charging_session_dto_1.CreateChargingSessionDto) === "function" ? _b : Object]),
-    __metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
-], ChargingSessionsController.prototype, "createChargingSession", null);
-__decorate([
     (0, common_1.Get)(),
     (0, common_1.UseGuards)(admin_auth_guard_1.AdminAuthGuard),
     (0, swagger_1.ApiOperation)({
-        summary: 'Get all charging sessions (Admin only)',
-        description: 'Retrieves a paginated list of all charging sessions. Only admins can access this endpoint.'
+        summary: 'Get all charging sessions (Admin)',
+        description: 'Get all charging sessions with pagination. Only admins can access this endpoint.'
     }),
     (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number, description: 'Page number (default: 1)' }),
     (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, description: 'Items per page (default: 10)' }),
     (0, swagger_1.ApiOkResponse)({
-        description: 'Charging sessions retrieved successfully',
-        type: (response_dto_1.PaginatedResponseDto)
+        description: 'All charging sessions retrieved successfully',
+        type: (charging_session_dto_1.PaginatedResponseDto)
     }),
     (0, swagger_1.ApiResponse)({
         status: 401,
@@ -16761,112 +16744,25 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number, Number]),
     __metadata("design:returntype", Promise)
-], ChargingSessionsController.prototype, "getAllChargingSessions", null);
-__decorate([
-    (0, common_1.Get)('active'),
-    (0, common_1.UseGuards)(admin_auth_guard_1.AdminAuthGuard),
-    (0, swagger_1.ApiOperation)({
-        summary: 'Get active charging sessions (Admin only)',
-        description: 'Retrieves a paginated list of all active charging sessions. Only admins can access this endpoint.'
-    }),
-    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number, description: 'Page number (default: 1)' }),
-    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, description: 'Items per page (default: 10)' }),
-    (0, swagger_1.ApiOkResponse)({
-        description: 'Active charging sessions retrieved successfully',
-        type: (response_dto_1.PaginatedResponseDto)
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 401,
-        description: 'Unauthorized - Admin token required'
-    }),
-    __param(0, (0, common_1.Query)('page')),
-    __param(1, (0, common_1.Query)('limit')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Number]),
-    __metadata("design:returntype", Promise)
-], ChargingSessionsController.prototype, "getActiveChargingSessions", null);
-__decorate([
-    (0, common_1.Get)('my-sessions'),
-    (0, common_1.UseGuards)(customer_auth_guard_1.CustomerAuthGuard),
-    (0, swagger_1.ApiOperation)({
-        summary: 'Get customer\'s own charging sessions',
-        description: 'Retrieves a paginated list of the authenticated customer\'s charging sessions.'
-    }),
-    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number, description: 'Page number (default: 1)' }),
-    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, description: 'Items per page (default: 10)' }),
-    (0, swagger_1.ApiOkResponse)({
-        description: 'Customer charging sessions retrieved successfully',
-        type: (response_dto_1.PaginatedResponseDto)
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 401,
-        description: 'Unauthorized - Customer token required'
-    }),
-    __param(0, (0, common_1.Request)()),
-    __param(1, (0, common_1.Query)('page')),
-    __param(2, (0, common_1.Query)('limit')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Number, Number]),
-    __metadata("design:returntype", Promise)
-], ChargingSessionsController.prototype, "getMyChargingSessions", null);
-__decorate([
-    (0, common_1.Get)(':id'),
-    (0, swagger_1.ApiOperation)({
-        summary: 'Get charging session by ID',
-        description: 'Retrieves a specific charging session by its ID.'
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: 'Charging session retrieved successfully',
-        type: response_dto_1.ChargingSessionResponseDto
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 404,
-        description: 'Not found - Charging session not found'
-    }),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
-], ChargingSessionsController.prototype, "getChargingSessionById", null);
-__decorate([
-    (0, common_1.Put)(':id/status'),
-    (0, common_1.UseGuards)(admin_auth_guard_1.AdminAuthGuard),
-    (0, swagger_1.ApiOperation)({
-        summary: 'Update charging session status (Admin only)',
-        description: 'Updates the status of a charging session. Only admins can update charging session status.'
-    }),
-    (0, swagger_1.ApiOkResponse)({
-        description: 'Charging session status updated successfully',
-        type: response_dto_1.ChargingSessionResponseDto
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 400,
-        description: 'Bad request - Invalid status'
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 401,
-        description: 'Unauthorized - Admin token required'
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 404,
-        description: 'Not found - Charging session not found'
-    }),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, typeof (_e = typeof charging_session_dto_1.UpdateChargingSessionDto !== "undefined" && charging_session_dto_1.UpdateChargingSessionDto) === "function" ? _e : Object]),
-    __metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
-], ChargingSessionsController.prototype, "updateChargingSessionStatus", null);
+], ChargingSessionsController.prototype, "getAllSessions", null);
 __decorate([
     (0, common_1.Get)('search'),
     (0, common_1.UseGuards)(admin_auth_guard_1.AdminAuthGuard),
     (0, swagger_1.ApiOperation)({
-        summary: 'Search charging sessions (Admin only)',
-        description: 'Search and filter charging sessions with various criteria. Only admins can access this endpoint.'
+        summary: 'Search charging sessions (Admin)',
+        description: 'Search charging sessions with advanced filters. Only admins can access this endpoint.'
     }),
+    (0, swagger_1.ApiQuery)({ name: 'q', required: false, type: String, description: 'Search query' }),
+    (0, swagger_1.ApiQuery)({ name: 'status', required: false, type: String, description: 'Filter by status' }),
+    (0, swagger_1.ApiQuery)({ name: 'customerId', required: false, type: String, description: 'Filter by customer ID' }),
+    (0, swagger_1.ApiQuery)({ name: 'bikeId', required: false, type: String, description: 'Filter by bike ID' }),
+    (0, swagger_1.ApiQuery)({ name: 'startDate', required: false, type: String, description: 'Start date filter' }),
+    (0, swagger_1.ApiQuery)({ name: 'endDate', required: false, type: String, description: 'End date filter' }),
+    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number, description: 'Page number' }),
+    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, description: 'Items per page' }),
     (0, swagger_1.ApiOkResponse)({
-        description: 'Charging sessions retrieved successfully',
-        type: (response_dto_1.PaginatedResponseDto)
+        description: 'Charging sessions search results',
+        type: (charging_session_dto_1.PaginatedResponseDto)
     }),
     (0, swagger_1.ApiResponse)({
         status: 401,
@@ -16874,19 +16770,19 @@ __decorate([
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_g = typeof charging_session_dto_1.SearchChargingSessionsDto !== "undefined" && charging_session_dto_1.SearchChargingSessionsDto) === "function" ? _g : Object]),
+    __metadata("design:paramtypes", [typeof (_b = typeof charging_session_dto_1.SearchChargingSessionsDto !== "undefined" && charging_session_dto_1.SearchChargingSessionsDto) === "function" ? _b : Object]),
     __metadata("design:returntype", Promise)
 ], ChargingSessionsController.prototype, "searchChargingSessions", null);
 __decorate([
     (0, common_1.Get)('stats'),
     (0, common_1.UseGuards)(admin_auth_guard_1.AdminAuthGuard),
     (0, swagger_1.ApiOperation)({
-        summary: 'Get charging session statistics (Admin only)',
+        summary: 'Get charging session statistics (Admin)',
         description: 'Get charging session statistics and analytics. Only admins can access this endpoint.'
     }),
     (0, swagger_1.ApiQuery)({ name: 'period', required: false, type: String, description: 'Time period (today, week, month, year)' }),
-    (0, swagger_1.ApiQuery)({ name: 'startDate', required: false, type: String, description: 'Start date (ISO string)' }),
-    (0, swagger_1.ApiQuery)({ name: 'endDate', required: false, type: String, description: 'End date (ISO string)' }),
+    (0, swagger_1.ApiQuery)({ name: 'startDate', required: false, type: String, description: 'Start date for custom period' }),
+    (0, swagger_1.ApiQuery)({ name: 'endDate', required: false, type: String, description: 'End date for custom period' }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Charging session statistics retrieved successfully'
     }),
@@ -16902,20 +16798,228 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ChargingSessionsController.prototype, "getChargingSessionStats", null);
 __decorate([
+    (0, common_1.Get)('revenue'),
+    (0, common_1.UseGuards)(admin_auth_guard_1.AdminAuthGuard),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Get revenue analytics (Admin)',
+        description: 'Get revenue analytics with time-based grouping. Only admins can access this endpoint.'
+    }),
+    (0, swagger_1.ApiQuery)({ name: 'period', required: false, type: String, description: 'Time period (week, month, year)' }),
+    (0, swagger_1.ApiQuery)({ name: 'groupBy', required: false, type: String, description: 'Group by (day, week, month)' }),
+    (0, swagger_1.ApiOkResponse)({
+        description: 'Revenue analytics retrieved successfully'
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 401,
+        description: 'Unauthorized - Admin token required'
+    }),
+    __param(0, (0, common_1.Query)('period')),
+    __param(1, (0, common_1.Query)('groupBy')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], ChargingSessionsController.prototype, "getRevenueAnalytics", null);
+__decorate([
+    (0, common_1.Get)('customer/:customerId'),
+    (0, common_1.UseGuards)(admin_auth_guard_1.AdminAuthGuard),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Get charging sessions by customer (Admin)',
+        description: 'Get all charging sessions for a specific customer. Only admins can access this endpoint.'
+    }),
+    (0, swagger_1.ApiParam)({ name: 'customerId', description: 'Customer ID' }),
+    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number, description: 'Page number' }),
+    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, description: 'Items per page' }),
+    (0, swagger_1.ApiOkResponse)({
+        description: 'Customer charging sessions retrieved successfully',
+        type: (charging_session_dto_1.PaginatedResponseDto)
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 401,
+        description: 'Unauthorized - Admin token required'
+    }),
+    __param(0, (0, common_1.Param)('customerId')),
+    __param(1, (0, common_1.Query)('page')),
+    __param(2, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Number, Number]),
+    __metadata("design:returntype", Promise)
+], ChargingSessionsController.prototype, "getChargingSessionsByCustomer", null);
+__decorate([
+    (0, common_1.Get)('bike/:bikeId'),
+    (0, common_1.UseGuards)(admin_auth_guard_1.AdminAuthGuard),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Get charging sessions by bike (Admin)',
+        description: 'Get all charging sessions for a specific bike. Only admins can access this endpoint.'
+    }),
+    (0, swagger_1.ApiParam)({ name: 'bikeId', description: 'Bike ID' }),
+    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number, description: 'Page number' }),
+    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, description: 'Items per page' }),
+    (0, swagger_1.ApiOkResponse)({
+        description: 'Bike charging sessions retrieved successfully',
+        type: (charging_session_dto_1.PaginatedResponseDto)
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 401,
+        description: 'Unauthorized - Admin token required'
+    }),
+    __param(0, (0, common_1.Param)('bikeId')),
+    __param(1, (0, common_1.Query)('page')),
+    __param(2, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Number, Number]),
+    __metadata("design:returntype", Promise)
+], ChargingSessionsController.prototype, "getChargingSessionsByBike", null);
+__decorate([
+    (0, common_1.Get)('reports'),
+    (0, common_1.UseGuards)(admin_auth_guard_1.AdminAuthGuard),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Get charging session reports (Admin)',
+        description: 'Generate charging session reports with filters. Only admins can access this endpoint.'
+    }),
+    (0, swagger_1.ApiQuery)({ name: 'startDate', required: false, type: String, description: 'Start date filter' }),
+    (0, swagger_1.ApiQuery)({ name: 'endDate', required: false, type: String, description: 'End date filter' }),
+    (0, swagger_1.ApiQuery)({ name: 'status', required: false, type: String, description: 'Filter by status' }),
+    (0, swagger_1.ApiQuery)({ name: 'customerId', required: false, type: String, description: 'Filter by customer ID' }),
+    (0, swagger_1.ApiQuery)({ name: 'bikeId', required: false, type: String, description: 'Filter by bike ID' }),
+    (0, swagger_1.ApiQuery)({ name: 'format', required: false, type: String, description: 'Report format' }),
+    (0, swagger_1.ApiOkResponse)({
+        description: 'Charging session report generated successfully'
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 401,
+        description: 'Unauthorized - Admin token required'
+    }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ChargingSessionsController.prototype, "getChargingSessionReports", null);
+__decorate([
+    (0, common_1.Get)('admin/all'),
+    (0, common_1.UseGuards)(admin_auth_guard_1.AdminAuthGuard),
+    (0, swagger_1.ApiOperation)({
+        summary: 'View all charging sessions (Admin)',
+        description: 'Get all charging sessions with advanced filtering options. Only admins can access this endpoint.'
+    }),
+    (0, swagger_1.ApiQuery)({ name: 'customerId', required: false, type: String, description: 'Filter by customer ID' }),
+    (0, swagger_1.ApiQuery)({ name: 'bikeId', required: false, type: String, description: 'Filter by bike ID' }),
+    (0, swagger_1.ApiQuery)({ name: 'status', required: false, type: String, description: 'Filter by session status' }),
+    (0, swagger_1.ApiQuery)({ name: 'dateRangeStart', required: false, type: String, description: 'Start date filter (ISO string)' }),
+    (0, swagger_1.ApiQuery)({ name: 'dateRangeEnd', required: false, type: String, description: 'End date filter (ISO string)' }),
+    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number, description: 'Page number (default: 1)' }),
+    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, description: 'Items per page (default: 10)' }),
+    (0, swagger_1.ApiOkResponse)({
+        description: 'All charging sessions retrieved successfully',
+        type: (charging_session_dto_1.PaginatedResponseDto)
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 401,
+        description: 'Unauthorized - Admin token required'
+    }),
+    __param(0, (0, common_1.Query)('customerId')),
+    __param(1, (0, common_1.Query)('bikeId')),
+    __param(2, (0, common_1.Query)('status')),
+    __param(3, (0, common_1.Query)('dateRangeStart')),
+    __param(4, (0, common_1.Query)('dateRangeEnd')),
+    __param(5, (0, common_1.Query)('page')),
+    __param(6, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, String, String, Number, Number]),
+    __metadata("design:returntype", Promise)
+], ChargingSessionsController.prototype, "getAllSessionsAdmin", null);
+__decorate([
+    (0, common_1.Post)('admin/end/:id'),
+    (0, common_1.UseGuards)(admin_auth_guard_1.AdminAuthGuard),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({
+        summary: 'End any charging session (Admin)',
+        description: 'Admin can force-end any charging session. Only admins can access this endpoint.'
+    }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: 'Charging session ID' }),
+    (0, swagger_1.ApiOkResponse)({
+        description: 'Charging session ended successfully',
+        type: charging_session_dto_1.ChargingSessionResponseDto
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 400,
+        description: 'Bad request - Invalid session ID or session already ended'
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 401,
+        description: 'Unauthorized - Admin token required'
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 404,
+        description: 'Not found - Charging session not found'
+    }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, typeof (_c = typeof charging_session_dto_1.EndChargingSessionDto !== "undefined" && charging_session_dto_1.EndChargingSessionDto) === "function" ? _c : Object]),
+    __metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
+], ChargingSessionsController.prototype, "adminEndSession", null);
+__decorate([
+    (0, common_1.Get)('admin/:id'),
+    (0, common_1.UseGuards)(admin_auth_guard_1.AdminAuthGuard),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Get charging session details (Admin)',
+        description: 'Get full details of any charging session. Only admins can access this endpoint.'
+    }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: 'Charging session ID' }),
+    (0, swagger_1.ApiOkResponse)({
+        description: 'Charging session details retrieved successfully',
+        type: charging_session_dto_1.ChargingSessionResponseDto
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 401,
+        description: 'Unauthorized - Admin token required'
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 404,
+        description: 'Not found - Charging session not found'
+    }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+], ChargingSessionsController.prototype, "adminGetSessionDetails", null);
+__decorate([
+    (0, common_1.Get)('admin/analytics/summary'),
+    (0, common_1.UseGuards)(admin_auth_guard_1.AdminAuthGuard),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Get charging analytics summary (Admin)',
+        description: 'Get aggregated charging session analytics including total sessions, energy delivered, and revenue.'
+    }),
+    (0, swagger_1.ApiQuery)({ name: 'dateRangeStart', required: false, type: String, description: 'Start date filter (ISO string)' }),
+    (0, swagger_1.ApiQuery)({ name: 'dateRangeEnd', required: false, type: String, description: 'End date filter (ISO string)' }),
+    (0, swagger_1.ApiOkResponse)({
+        description: 'Charging analytics summary retrieved successfully'
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 401,
+        description: 'Unauthorized - Admin token required'
+    }),
+    __param(0, (0, common_1.Query)('dateRangeStart')),
+    __param(1, (0, common_1.Query)('dateRangeEnd')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], ChargingSessionsController.prototype, "getAdminAnalyticsSummary", null);
+__decorate([
     (0, common_1.Post)('start'),
     (0, common_1.UseGuards)(customer_auth_guard_1.CustomerAuthGuard),
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
     (0, swagger_1.ApiOperation)({
         summary: 'Start a charging session (Customer)',
-        description: 'Start a new charging session for the authenticated customer.'
+        description: 'Start a new charging session for the authenticated customer with a specific bike.'
     }),
     (0, swagger_1.ApiCreatedResponse)({
         description: 'Charging session started successfully',
-        type: response_dto_1.ChargingSessionResponseDto
+        type: charging_session_dto_1.ChargingSessionResponseDto
     }),
     (0, swagger_1.ApiResponse)({
         status: 400,
-        description: 'Bad request - Invalid input data or customer already has active session'
+        description: 'Bad request - Invalid input data or customer already has active session for this bike'
     }),
     (0, swagger_1.ApiResponse)({
         status: 401,
@@ -16928,23 +17032,25 @@ __decorate([
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, typeof (_h = typeof charging_session_dto_1.StartChargingSessionDto !== "undefined" && charging_session_dto_1.StartChargingSessionDto) === "function" ? _h : Object]),
-    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
+    __metadata("design:paramtypes", [Object, typeof (_f = typeof charging_session_dto_1.StartChargingSessionDto !== "undefined" && charging_session_dto_1.StartChargingSessionDto) === "function" ? _f : Object]),
+    __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
 ], ChargingSessionsController.prototype, "startChargingSession", null);
 __decorate([
-    (0, common_1.Put)(':id/end'),
+    (0, common_1.Post)(':id/end'),
     (0, common_1.UseGuards)(customer_auth_guard_1.CustomerAuthGuard),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({
         summary: 'End a charging session (Customer)',
-        description: 'End the authenticated customer\'s charging session.'
+        description: 'End a specific charging session by providing the session ID. Only the session owner can end their session.'
     }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: 'Charging session ID' }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Charging session ended successfully',
-        type: response_dto_1.ChargingSessionResponseDto
+        type: charging_session_dto_1.ChargingSessionResponseDto
     }),
     (0, swagger_1.ApiResponse)({
         status: 400,
-        description: 'Bad request - Session not active or does not belong to customer'
+        description: 'Bad request - Invalid session ID or session already ended'
     }),
     (0, swagger_1.ApiResponse)({
         status: 401,
@@ -16954,27 +17060,29 @@ __decorate([
         status: 404,
         description: 'Not found - Charging session not found'
     }),
-    __param(0, (0, common_1.Request)()),
-    __param(1, (0, common_1.Param)('id')),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Request)()),
     __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, typeof (_k = typeof charging_session_dto_1.EndChargingSessionDto !== "undefined" && charging_session_dto_1.EndChargingSessionDto) === "function" ? _k : Object]),
-    __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
+    __metadata("design:paramtypes", [String, Object, typeof (_h = typeof charging_session_dto_1.EndChargingSessionDto !== "undefined" && charging_session_dto_1.EndChargingSessionDto) === "function" ? _h : Object]),
+    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
 ], ChargingSessionsController.prototype, "endChargingSession", null);
 __decorate([
-    (0, common_1.Put)(':id/cancel'),
+    (0, common_1.Post)(':id/cancel'),
     (0, common_1.UseGuards)(customer_auth_guard_1.CustomerAuthGuard),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({
         summary: 'Cancel a charging session (Customer)',
-        description: 'Cancel the authenticated customer\'s charging session.'
+        description: 'Cancel a specific charging session by providing the session ID. Only the session owner can cancel their session.'
     }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: 'Charging session ID' }),
     (0, swagger_1.ApiOkResponse)({
         description: 'Charging session cancelled successfully',
-        type: response_dto_1.ChargingSessionResponseDto
+        type: charging_session_dto_1.ChargingSessionResponseDto
     }),
     (0, swagger_1.ApiResponse)({
         status: 400,
-        description: 'Bad request - Session not active or does not belong to customer'
+        description: 'Bad request - Invalid session ID or session already ended'
     }),
     (0, swagger_1.ApiResponse)({
         status: 401,
@@ -16984,40 +17092,114 @@ __decorate([
         status: 404,
         description: 'Not found - Charging session not found'
     }),
-    __param(0, (0, common_1.Request)()),
-    __param(1, (0, common_1.Param)('id')),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String]),
-    __metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
 ], ChargingSessionsController.prototype, "cancelChargingSession", null);
 __decorate([
-    (0, common_1.Get)('my-sessions/current'),
+    (0, common_1.Get)('active'),
     (0, common_1.UseGuards)(customer_auth_guard_1.CustomerAuthGuard),
     (0, swagger_1.ApiOperation)({
-        summary: 'Get current active charging session (Customer)',
-        description: 'Get the authenticated customer\'s current active charging session.'
+        summary: 'Get active charging sessions (Customer)',
+        description: 'Get all active charging sessions for the authenticated customer across all their bikes.'
     }),
     (0, swagger_1.ApiOkResponse)({
-        description: 'Current active charging session retrieved successfully',
-        type: response_dto_1.ChargingSessionResponseDto
+        description: 'Active charging sessions retrieved successfully',
+        type: [charging_session_dto_1.ChargingSessionResponseDto]
     }),
     (0, swagger_1.ApiResponse)({
         status: 401,
         description: 'Unauthorized - Customer token required'
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 404,
-        description: 'Not found - No active charging session'
     }),
     __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], ChargingSessionsController.prototype, "getCurrentActiveSession", null);
+], ChargingSessionsController.prototype, "getActiveSessions", null);
+__decorate([
+    (0, common_1.Get)('my-sessions'),
+    (0, common_1.UseGuards)(customer_auth_guard_1.CustomerAuthGuard),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Get past charging sessions (Customer)',
+        description: 'Get completed charging sessions for the authenticated customer with pagination and filters.'
+    }),
+    (0, swagger_1.ApiQuery)({ name: 'bikeId', required: false, type: String, description: 'Filter by specific bike ID' }),
+    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number, description: 'Page number (default: 1)' }),
+    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, description: 'Items per page (default: 10)' }),
+    (0, swagger_1.ApiQuery)({ name: 'dateRangeStart', required: false, type: String, description: 'Start date filter (ISO string)' }),
+    (0, swagger_1.ApiQuery)({ name: 'dateRangeEnd', required: false, type: String, description: 'End date filter (ISO string)' }),
+    (0, swagger_1.ApiOkResponse)({
+        description: 'Past charging sessions retrieved successfully',
+        type: (charging_session_dto_1.PaginatedResponseDto)
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 401,
+        description: 'Unauthorized - Customer token required'
+    }),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)('bikeId')),
+    __param(2, (0, common_1.Query)('page')),
+    __param(3, (0, common_1.Query)('limit')),
+    __param(4, (0, common_1.Query)('dateRangeStart')),
+    __param(5, (0, common_1.Query)('dateRangeEnd')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, Number, Number, String, String]),
+    __metadata("design:returntype", Promise)
+], ChargingSessionsController.prototype, "getMySessions", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, common_1.UseGuards)(customer_auth_guard_1.CustomerAuthGuard),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Get charging session details (Customer)',
+        description: 'Get full details of a specific charging session. Only the session owner can view their session.'
+    }),
+    (0, swagger_1.ApiParam)({ name: 'id', description: 'Charging session ID' }),
+    (0, swagger_1.ApiOkResponse)({
+        description: 'Charging session details retrieved successfully',
+        type: charging_session_dto_1.ChargingSessionResponseDto
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 401,
+        description: 'Unauthorized - Customer token required'
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 404,
+        description: 'Not found - Charging session not found'
+    }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
+], ChargingSessionsController.prototype, "getSessionDetails", null);
+__decorate([
+    (0, common_1.Get)('analytics/summary'),
+    (0, common_1.UseGuards)(customer_auth_guard_1.CustomerAuthGuard),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Get customer charging analytics (Customer)',
+        description: 'Get charging session analytics for the authenticated customer including sessions per day/month and duration statistics.'
+    }),
+    (0, swagger_1.ApiQuery)({ name: 'dateRangeStart', required: false, type: String, description: 'Start date filter (ISO string)' }),
+    (0, swagger_1.ApiQuery)({ name: 'dateRangeEnd', required: false, type: String, description: 'End date filter (ISO string)' }),
+    (0, swagger_1.ApiOkResponse)({
+        description: 'Customer charging analytics retrieved successfully'
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 401,
+        description: 'Unauthorized - Customer token required'
+    }),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)('dateRangeStart')),
+    __param(2, (0, common_1.Query)('dateRangeEnd')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, String]),
+    __metadata("design:returntype", Promise)
+], ChargingSessionsController.prototype, "getCustomerAnalytics", null);
 exports.ChargingSessionsController = ChargingSessionsController = __decorate([
-    (0, swagger_1.ApiTags)('charging-sessions'),
+    (0, swagger_1.ApiTags)('Charging Sessions'),
     (0, common_1.Controller)('charging-sessions'),
-    (0, swagger_1.ApiBearerAuth)('JWT-auth'),
     __metadata("design:paramtypes", [typeof (_a = typeof charging_sessions_service_1.ChargingSessionsService !== "undefined" && charging_sessions_service_1.ChargingSessionsService) === "function" ? _a : Object])
 ], ChargingSessionsController);
 
@@ -17047,50 +17229,7 @@ let ChargingSessionsService = class ChargingSessionsService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async createChargingSession(data) {
-        const customer = await this.prisma.customer.findUnique({
-            where: { id: data.customerId },
-        });
-        if (!customer) {
-            throw new common_1.NotFoundException('Customer not found');
-        }
-        const bike = await this.prisma.bike.findUnique({
-            where: { id: data.bikeId },
-        });
-        if (!bike) {
-            throw new common_1.NotFoundException('Bike not found');
-        }
-        const chargingSession = await this.prisma.chargingSession.create({
-            data: {
-                customerId: data.customerId,
-                bikeId: data.bikeId,
-                amount: data.amount,
-                startTime: data.startTime,
-                endTime: data.endTime,
-                status: data.status || 'ACTIVE',
-            },
-            include: {
-                customer: {
-                    select: {
-                        id: true,
-                        firstName: true,
-                        lastName: true,
-                        email: true,
-                    },
-                },
-                bike: {
-                    select: {
-                        id: true,
-                        serialNumber: true,
-                        brand: true,
-                        model: true,
-                    },
-                },
-            },
-        });
-        return chargingSession;
-    }
-    async getAllChargingSessions(page = 1, limit = 10) {
+    async findAll(page = 1, limit = 10) {
         const skip = (page - 1) * limit;
         const [sessions, total] = await Promise.all([
             this.prisma.chargingSession.findMany({
@@ -17110,45 +17249,13 @@ let ChargingSessionsService = class ChargingSessionsService {
                         select: {
                             id: true,
                             serialNumber: true,
+                            brand: true,
                             model: true,
                         },
                     },
                 },
             }),
             this.prisma.chargingSession.count(),
-        ]);
-        const totalPages = Math.ceil(total / limit);
-        return {
-            items: sessions,
-            total,
-            page,
-            limit,
-            totalPages,
-            hasNext: page < totalPages,
-            hasPrev: page > 1,
-        };
-    }
-    async getChargingSessionsByCustomerId(customerId, page = 1, limit = 10) {
-        const skip = (page - 1) * limit;
-        const [sessions, total] = await Promise.all([
-            this.prisma.chargingSession.findMany({
-                where: { customerId },
-                skip,
-                take: limit,
-                orderBy: { startTime: 'desc' },
-                include: {
-                    bike: {
-                        select: {
-                            id: true,
-                            serialNumber: true,
-                            model: true,
-                        },
-                    },
-                },
-            }),
-            this.prisma.chargingSession.count({
-                where: { customerId },
-            }),
         ]);
         const totalPages = Math.ceil(total / limit);
         return {
@@ -17187,83 +17294,6 @@ let ChargingSessionsService = class ChargingSessionsService {
             throw new common_1.NotFoundException('Charging session not found');
         }
         return session;
-    }
-    async updateChargingSessionStatus(id, status, endTime) {
-        const session = await this.prisma.chargingSession.findUnique({
-            where: { id },
-        });
-        if (!session) {
-            throw new common_1.NotFoundException('Charging session not found');
-        }
-        const updateData = { status };
-        if (endTime) {
-            updateData.endTime = endTime;
-        }
-        const updatedSession = await this.prisma.chargingSession.update({
-            where: { id },
-            data: updateData,
-            include: {
-                customer: {
-                    select: {
-                        id: true,
-                        firstName: true,
-                        lastName: true,
-                        email: true,
-                    },
-                },
-                bike: {
-                    select: {
-                        id: true,
-                        serialNumber: true,
-                        brand: true,
-                        model: true,
-                    },
-                },
-            },
-        });
-        return updatedSession;
-    }
-    async getActiveChargingSessions(page = 1, limit = 10) {
-        const skip = (page - 1) * limit;
-        const [sessions, total] = await Promise.all([
-            this.prisma.chargingSession.findMany({
-                where: { status: 'ACTIVE' },
-                skip,
-                take: limit,
-                orderBy: { startTime: 'desc' },
-                include: {
-                    customer: {
-                        select: {
-                            id: true,
-                            firstName: true,
-                            lastName: true,
-                            email: true,
-                        },
-                    },
-                    bike: {
-                        select: {
-                            id: true,
-                            serialNumber: true,
-                            brand: true,
-                            model: true,
-                        },
-                    },
-                },
-            }),
-            this.prisma.chargingSession.count({
-                where: { status: 'ACTIVE' },
-            }),
-        ]);
-        const totalPages = Math.ceil(total / limit);
-        return {
-            items: sessions,
-            total,
-            page,
-            limit,
-            totalPages,
-            hasNext: page < totalPages,
-            hasPrev: page > 1,
-        };
     }
     async searchChargingSessions(filters) {
         const page = filters.page || 1;
@@ -17298,6 +17328,583 @@ let ChargingSessionsService = class ChargingSessionsService {
                 whereConditions.startTime.lte = new Date(filters.endDate);
             }
         }
+        if (filters.minAmount !== undefined || filters.maxAmount !== undefined) {
+            whereConditions.amount = {};
+            if (filters.minAmount !== undefined) {
+                whereConditions.amount.gte = filters.minAmount;
+            }
+            if (filters.maxAmount !== undefined) {
+                whereConditions.amount.lte = filters.maxAmount;
+            }
+        }
+        const orderBy = {};
+        if (filters.sortBy) {
+            orderBy[filters.sortBy] = filters.sortOrder || 'desc';
+        }
+        else {
+            orderBy.startTime = 'desc';
+        }
+        const [sessions, total] = await Promise.all([
+            this.prisma.chargingSession.findMany({
+                where: whereConditions,
+                skip,
+                take: limit,
+                orderBy,
+                include: {
+                    customer: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                            email: true,
+                            phone: true,
+                        },
+                    },
+                    bike: {
+                        select: {
+                            id: true,
+                            serialNumber: true,
+                            brand: true,
+                            model: true,
+                            status: true,
+                        },
+                    },
+                },
+            }),
+            this.prisma.chargingSession.count({
+                where: whereConditions,
+            }),
+        ]);
+        const totalPages = Math.ceil(total / limit);
+        return {
+            items: sessions,
+            total,
+            page,
+            limit,
+            totalPages,
+            hasNext: page < totalPages,
+            hasPrev: page > 1,
+        };
+    }
+    async startChargingSession(customerId, data) {
+        const existingActiveSession = await this.prisma.chargingSession.findFirst({
+            where: {
+                customerId,
+                bikeId: data.bikeId,
+                status: 'ACTIVE',
+            },
+        });
+        if (existingActiveSession) {
+            throw new common_1.BadRequestException('Customer already has an active charging session for this bike');
+        }
+        const bike = await this.prisma.bike.findUnique({
+            where: { id: data.bikeId },
+        });
+        if (!bike) {
+            throw new common_1.NotFoundException('Bike not found');
+        }
+        if (bike.status !== 'AVAILABLE') {
+            throw new common_1.BadRequestException('Bike is not available for charging');
+        }
+        const chargingSession = await this.prisma.chargingSession.create({
+            data: {
+                customerId: customerId,
+                bikeId: data.bikeId,
+                amount: data.amount,
+                startTime: new Date(),
+                status: 'ACTIVE',
+            },
+            include: {
+                customer: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        email: true,
+                    },
+                },
+                bike: {
+                    select: {
+                        id: true,
+                        serialNumber: true,
+                        brand: true,
+                        model: true,
+                    },
+                },
+            },
+        });
+        return chargingSession;
+    }
+    async endChargingSession(customerId, sessionId, endTime) {
+        const session = await this.prisma.chargingSession.findUnique({
+            where: { id: sessionId },
+            include: {
+                customer: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        email: true,
+                    },
+                },
+                bike: {
+                    select: {
+                        id: true,
+                        serialNumber: true,
+                        brand: true,
+                        model: true,
+                    },
+                },
+            },
+        });
+        if (!session) {
+            throw new common_1.NotFoundException('Charging session not found');
+        }
+        if (session.customerId !== customerId) {
+            throw new common_1.BadRequestException('This charging session does not belong to you');
+        }
+        if (session.status !== 'ACTIVE') {
+            throw new common_1.BadRequestException(`Charging session is not active. Current status: ${session.status}`);
+        }
+        if (session.endTime) {
+            throw new common_1.BadRequestException('Charging session has already ended');
+        }
+        const actualEndTime = endTime || new Date();
+        if (actualEndTime < session.startTime) {
+            throw new common_1.BadRequestException('End time cannot be before start time');
+        }
+        const updatedSession = await this.prisma.chargingSession.update({
+            where: { id: sessionId },
+            data: {
+                endTime: actualEndTime,
+                status: 'COMPLETED',
+            },
+            include: {
+                customer: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        email: true,
+                    },
+                },
+                bike: {
+                    select: {
+                        id: true,
+                        serialNumber: true,
+                        brand: true,
+                        model: true,
+                    },
+                },
+            },
+        });
+        return updatedSession;
+    }
+    async cancelChargingSession(customerId, sessionId) {
+        const session = await this.prisma.chargingSession.findUnique({
+            where: { id: sessionId },
+            include: {
+                customer: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        email: true,
+                    },
+                },
+                bike: {
+                    select: {
+                        id: true,
+                        serialNumber: true,
+                        brand: true,
+                        model: true,
+                    },
+                },
+            },
+        });
+        if (!session) {
+            throw new common_1.NotFoundException('Charging session not found');
+        }
+        if (session.customerId !== customerId) {
+            throw new common_1.BadRequestException('This charging session does not belong to you');
+        }
+        if (session.status !== 'ACTIVE') {
+            throw new common_1.BadRequestException(`Charging session is not active. Current status: ${session.status}`);
+        }
+        if (session.endTime) {
+            throw new common_1.BadRequestException('Charging session has already ended');
+        }
+        const endTime = new Date();
+        const updatedSession = await this.prisma.chargingSession.update({
+            where: { id: sessionId },
+            data: {
+                endTime,
+                status: 'CANCELLED',
+            },
+            include: {
+                customer: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        email: true,
+                    },
+                },
+                bike: {
+                    select: {
+                        id: true,
+                        serialNumber: true,
+                        brand: true,
+                        model: true,
+                    },
+                },
+            },
+        });
+        return updatedSession;
+    }
+    async getActiveSessionsByCustomer(customerId) {
+        return this.prisma.chargingSession.findMany({
+            where: {
+                customerId,
+                status: 'ACTIVE',
+            },
+            include: {
+                customer: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        email: true,
+                    },
+                },
+                bike: {
+                    select: {
+                        id: true,
+                        serialNumber: true,
+                        brand: true,
+                        model: true,
+                    },
+                },
+            },
+            orderBy: { startTime: 'desc' },
+        });
+    }
+    async getMySessions(customerId, filters) {
+        const page = filters.page || 1;
+        const limit = filters.limit || 10;
+        const skip = (page - 1) * limit;
+        const whereConditions = {
+            customerId,
+            status: { in: ['COMPLETED', 'CANCELLED'] },
+        };
+        if (filters.bikeId) {
+            whereConditions.bikeId = filters.bikeId;
+        }
+        if (filters.dateRangeStart || filters.dateRangeEnd) {
+            whereConditions.startTime = {};
+            if (filters.dateRangeStart) {
+                whereConditions.startTime.gte = new Date(filters.dateRangeStart);
+            }
+            if (filters.dateRangeEnd) {
+                whereConditions.startTime.lte = new Date(filters.dateRangeEnd);
+            }
+        }
+        const [sessions, total] = await Promise.all([
+            this.prisma.chargingSession.findMany({
+                where: whereConditions,
+                skip,
+                take: limit,
+                orderBy: { startTime: 'desc' },
+                include: {
+                    bike: {
+                        select: {
+                            id: true,
+                            serialNumber: true,
+                            brand: true,
+                            model: true,
+                        },
+                    },
+                },
+            }),
+            this.prisma.chargingSession.count({
+                where: whereConditions,
+            }),
+        ]);
+        const totalPages = Math.ceil(total / limit);
+        return {
+            items: sessions,
+            total,
+            page,
+            limit,
+            totalPages,
+            hasNext: page < totalPages,
+            hasPrev: page > 1,
+        };
+    }
+    async getSessionDetails(customerId, sessionId) {
+        const session = await this.prisma.chargingSession.findFirst({
+            where: {
+                id: sessionId,
+                customerId,
+            },
+            include: {
+                customer: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        email: true,
+                    },
+                },
+                bike: {
+                    select: {
+                        id: true,
+                        serialNumber: true,
+                        brand: true,
+                        model: true,
+                    },
+                },
+            },
+        });
+        if (!session) {
+            throw new common_1.NotFoundException('Charging session not found');
+        }
+        return session;
+    }
+    async getCurrentActiveSession(customerId) {
+        const session = await this.prisma.chargingSession.findFirst({
+            where: {
+                customerId,
+                status: 'ACTIVE',
+            },
+            include: {
+                customer: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        email: true,
+                    },
+                },
+                bike: {
+                    select: {
+                        id: true,
+                        serialNumber: true,
+                        brand: true,
+                        model: true,
+                    },
+                },
+            },
+        });
+        if (!session) {
+            throw new common_1.NotFoundException('No active charging session found');
+        }
+        return session;
+    }
+    async getCustomerAnalytics(customerId, dateRangeStart, dateRangeEnd) {
+        console.log('🔍 Service: getCustomerAnalytics called with customerId:', customerId);
+        const whereConditions = { customerId };
+        if (dateRangeStart || dateRangeEnd) {
+            whereConditions.startTime = {};
+            if (dateRangeStart) {
+                whereConditions.startTime.gte = new Date(dateRangeStart);
+            }
+            if (dateRangeEnd) {
+                whereConditions.startTime.lte = new Date(dateRangeEnd);
+            }
+        }
+        const allSessions = await this.prisma.chargingSession.findMany({
+            where: whereConditions,
+            orderBy: { startTime: 'desc' },
+            include: {
+                bike: {
+                    select: {
+                        id: true,
+                        serialNumber: true,
+                        brand: true,
+                        model: true,
+                    },
+                },
+            },
+        });
+        console.log('🔍 Found sessions:', allSessions.length);
+        const totalSessions = allSessions.length;
+        const completedSessions = allSessions.filter(s => s.status === 'COMPLETED').length;
+        const activeSessions = allSessions.filter(s => s.status === 'ACTIVE').length;
+        const cancelledSessions = allSessions.filter(s => s.status === 'CANCELLED').length;
+        const totalRevenue = allSessions
+            .filter(s => s.status === 'COMPLETED')
+            .reduce((sum, session) => sum + session.amount, 0);
+        const sessionsWithDuration = allSessions
+            .filter(s => s.endTime && s.status !== 'ACTIVE')
+            .map(session => {
+            const durationMs = session.endTime.getTime() - session.startTime.getTime();
+            const durationMinutes = Math.round(durationMs / (1000 * 60));
+            const durationHours = durationMinutes / 60;
+            return {
+                ...session,
+                durationMinutes,
+                durationHours,
+            };
+        });
+        const totalDurationMinutes = sessionsWithDuration.reduce((sum, s) => sum + s.durationMinutes, 0);
+        const averageDurationMinutes = sessionsWithDuration.length > 0 ? totalDurationMinutes / sessionsWithDuration.length : 0;
+        const sessionsPerDay = await this.prisma.chargingSession.groupBy({
+            by: ['startTime'],
+            where: whereConditions,
+            _count: {
+                id: true,
+            },
+            _sum: {
+                amount: true,
+            },
+            orderBy: {
+                startTime: 'desc',
+            },
+            take: 30,
+        });
+        const sessionsPerMonth = await this.prisma.chargingSession.groupBy({
+            by: ['startTime'],
+            where: whereConditions,
+            _count: {
+                id: true,
+            },
+            _sum: {
+                amount: true,
+            },
+            orderBy: {
+                startTime: 'desc',
+            },
+            take: 12,
+        });
+        const recentSessions = allSessions.slice(0, 10).map(session => {
+            const sessionData = {
+                id: session.id,
+                startTime: session.startTime,
+                endTime: session.endTime,
+                status: session.status,
+                amount: session.amount,
+                bike: session.bike,
+            };
+            if (session.endTime && session.status !== 'ACTIVE') {
+                const durationMs = session.endTime.getTime() - session.startTime.getTime();
+                sessionData.durationMinutes = Math.round(durationMs / (1000 * 60));
+                sessionData.durationHours = sessionData.durationMinutes / 60;
+                sessionData.durationFormatted = this.formatDuration(sessionData.durationMinutes);
+            }
+            else if (session.status === 'ACTIVE') {
+                const durationMs = new Date().getTime() - session.startTime.getTime();
+                sessionData.durationMinutes = Math.round(durationMs / (1000 * 60));
+                sessionData.durationHours = sessionData.durationMinutes / 60;
+                sessionData.durationFormatted = this.formatDuration(sessionData.durationMinutes);
+                sessionData.isActive = true;
+            }
+            return sessionData;
+        });
+        const hourlyDistribution = this.calculateHourlyDistribution(allSessions);
+        const dailyStats = this.calculateDailyStats(sessionsPerDay);
+        const enhancedResponse = {
+            totalSessions,
+            completedSessions,
+            activeSessions,
+            cancelledSessions,
+            totalRevenue,
+            totalDurationMinutes,
+            totalDurationHours: totalDurationMinutes / 60,
+            averageDurationMinutes,
+            averageDurationHours: averageDurationMinutes / 60,
+            dailyStats,
+            sessionsPerDay: sessionsPerDay.map(day => ({
+                date: day.startTime,
+                count: day._count.id,
+                revenue: day._sum.amount || 0,
+            })),
+            sessionsPerMonth: sessionsPerMonth.map(month => ({
+                date: month.startTime,
+                count: month._count.id,
+                revenue: month._sum.amount || 0,
+            })),
+            hourlyDistribution,
+            recentSessions,
+            summary: {
+                totalSessions,
+                completedSessions,
+                activeSessions,
+                cancelledSessions,
+                totalRevenue,
+                averageRevenuePerSession: completedSessions > 0 ? totalRevenue / completedSessions : 0,
+                averageDurationMinutes,
+                totalDurationHours: totalDurationMinutes / 60,
+            }
+        };
+        console.log('🔍 Enhanced response keys:', Object.keys(enhancedResponse));
+        console.log('🔍 Enhanced response has totalDurationMinutes:', 'totalDurationMinutes' in enhancedResponse);
+        console.log('🔍 Enhanced response has recentSessions:', 'recentSessions' in enhancedResponse);
+        return enhancedResponse;
+    }
+    formatDuration(minutes) {
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        if (hours > 0) {
+            return `${hours}h ${mins}m`;
+        }
+        return `${mins}m`;
+    }
+    calculateHourlyDistribution(sessions) {
+        const hourlyCounts = new Array(24).fill(0);
+        sessions.forEach(session => {
+            const hour = session.startTime.getHours();
+            hourlyCounts[hour]++;
+        });
+        const total = sessions.length;
+        return hourlyCounts.map((count, hour) => ({
+            hour,
+            count,
+            percentage: total > 0 ? Math.round((count / total) * 100) : 0,
+        }));
+    }
+    calculateDailyStats(sessionsPerDay) {
+        if (sessionsPerDay.length === 0) {
+            return {
+                averageSessionsPerDay: 0,
+                averageRevenuePerDay: 0,
+                mostActiveDay: '',
+                mostActiveDayCount: 0,
+            };
+        }
+        const totalSessions = sessionsPerDay.reduce((sum, day) => sum + day._count.id, 0);
+        const totalRevenue = sessionsPerDay.reduce((sum, day) => sum + (day._sum.amount || 0), 0);
+        const mostActiveDay = sessionsPerDay.reduce((max, day) => day._count.id > max._count.id ? day : max);
+        return {
+            averageSessionsPerDay: Math.round((totalSessions / sessionsPerDay.length) * 100) / 100,
+            averageRevenuePerDay: Math.round((totalRevenue / sessionsPerDay.length) * 100) / 100,
+            mostActiveDay: mostActiveDay.startTime.toISOString().split('T')[0],
+            mostActiveDayCount: mostActiveDay._count.id,
+        };
+    }
+    async getAllSessions(filters) {
+        const page = filters.page || 1;
+        const limit = filters.limit || 10;
+        const skip = (page - 1) * limit;
+        const whereConditions = {};
+        if (filters.customerId) {
+            whereConditions.customerId = filters.customerId;
+        }
+        if (filters.bikeId) {
+            whereConditions.bikeId = filters.bikeId;
+        }
+        if (filters.status) {
+            whereConditions.status = filters.status;
+        }
+        if (filters.dateRangeStart || filters.dateRangeEnd) {
+            whereConditions.startTime = {};
+            if (filters.dateRangeStart) {
+                whereConditions.startTime.gte = new Date(filters.dateRangeStart);
+            }
+            if (filters.dateRangeEnd) {
+                whereConditions.startTime.lte = new Date(filters.dateRangeEnd);
+            }
+        }
         const [sessions, total] = await Promise.all([
             this.prisma.chargingSession.findMany({
                 where: whereConditions,
@@ -17338,45 +17945,9 @@ let ChargingSessionsService = class ChargingSessionsService {
             hasPrev: page > 1,
         };
     }
-    async startChargingSession(customerId, data) {
-        const customer = await this.prisma.customer.findUnique({
-            where: { id: customerId },
-        });
-        if (!customer) {
-            throw new common_1.NotFoundException('Customer not found');
-        }
-        const bike = await this.prisma.bike.findUnique({
-            where: { id: data.bikeId },
-        });
-        if (!bike) {
-            throw new common_1.NotFoundException('Bike not found');
-        }
-        const activeSession = await this.prisma.chargingSession.findFirst({
-            where: {
-                customerId: customerId,
-                status: 'ACTIVE',
-            },
-        });
-        if (activeSession) {
-            throw new common_1.BadRequestException('Customer already has an active charging session');
-        }
-        const bikeActiveSession = await this.prisma.chargingSession.findFirst({
-            where: {
-                bikeId: data.bikeId,
-                status: 'ACTIVE',
-            },
-        });
-        if (bikeActiveSession) {
-            throw new common_1.BadRequestException('Bike is already being used in an active charging session');
-        }
-        const chargingSession = await this.prisma.chargingSession.create({
-            data: {
-                customerId: customerId,
-                bikeId: data.bikeId,
-                amount: data.amount,
-                startTime: new Date(),
-                status: 'ACTIVE',
-            },
+    async adminEndSession(sessionId, endTime) {
+        const session = await this.prisma.chargingSession.findUnique({
+            where: { id: sessionId },
             include: {
                 customer: {
                     select: {
@@ -17396,30 +17967,18 @@ let ChargingSessionsService = class ChargingSessionsService {
                 },
             },
         });
-        return chargingSession;
-    }
-    async endChargingSession(customerId, sessionId, endTime) {
-        const session = await this.prisma.chargingSession.findUnique({
-            where: { id: sessionId },
-            include: {
-                customer: true,
-                bike: true,
-            },
-        });
         if (!session) {
             throw new common_1.NotFoundException('Charging session not found');
-        }
-        if (session.customerId !== customerId) {
-            throw new common_1.BadRequestException('This charging session does not belong to you');
         }
         if (session.status !== 'ACTIVE') {
             throw new common_1.BadRequestException('Charging session is not active');
         }
+        const actualEndTime = endTime || new Date();
         const updatedSession = await this.prisma.chargingSession.update({
             where: { id: sessionId },
             data: {
+                endTime: actualEndTime,
                 status: 'COMPLETED',
-                endTime: endTime || new Date(),
             },
             include: {
                 customer: {
@@ -17442,64 +18001,62 @@ let ChargingSessionsService = class ChargingSessionsService {
         });
         return updatedSession;
     }
-    async cancelChargingSession(customerId, sessionId) {
+    async adminGetSessionDetails(sessionId) {
         const session = await this.prisma.chargingSession.findUnique({
             where: { id: sessionId },
+            include: {
+                customer: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        email: true,
+                    },
+                },
+                bike: {
+                    select: {
+                        id: true,
+                        serialNumber: true,
+                        brand: true,
+                        model: true,
+                    },
+                },
+            },
         });
         if (!session) {
             throw new common_1.NotFoundException('Charging session not found');
         }
-        if (session.customerId !== customerId) {
-            throw new common_1.BadRequestException('This charging session does not belong to you');
-        }
-        if (session.status !== 'ACTIVE') {
-            throw new common_1.BadRequestException('Charging session is not active');
-        }
-        const updatedSession = await this.prisma.chargingSession.update({
-            where: { id: sessionId },
-            data: {
-                status: 'CANCELLED',
-                endTime: new Date(),
-            },
-            include: {
-                customer: {
-                    select: {
-                        id: true,
-                        firstName: true,
-                        lastName: true,
-                        email: true,
-                    },
-                },
-                bike: {
-                    select: {
-                        id: true,
-                        serialNumber: true,
-                        brand: true,
-                        model: true,
-                    },
-                },
-            },
-        });
-        return updatedSession;
-    }
-    async getCurrentActiveSession(customerId) {
-        const session = await this.prisma.chargingSession.findFirst({
-            where: {
-                customerId: customerId,
-                status: 'ACTIVE',
-            },
-            include: {
-                bike: {
-                    select: {
-                        id: true,
-                        serialNumber: true,
-                        brand: true,
-                        model: true,
-                    },
-                },
-            },
-        });
         return session;
+    }
+    async getAdminAnalyticsSummary(dateRangeStart, dateRangeEnd) {
+        const whereConditions = {};
+        if (dateRangeStart || dateRangeEnd) {
+            whereConditions.startTime = {};
+            if (dateRangeStart) {
+                whereConditions.startTime.gte = new Date(dateRangeStart);
+            }
+            if (dateRangeEnd) {
+                whereConditions.startTime.lte = new Date(dateRangeEnd);
+            }
+        }
+        const [totalSessions, activeSessions, completedSessions, totalRevenue] = await Promise.all([
+            this.prisma.chargingSession.count({ where: whereConditions }),
+            this.prisma.chargingSession.count({ where: { ...whereConditions, status: 'ACTIVE' } }),
+            this.prisma.chargingSession.count({ where: { ...whereConditions, status: 'COMPLETED' } }),
+            this.prisma.chargingSession.aggregate({
+                where: { ...whereConditions, status: 'COMPLETED' },
+                _sum: { amount: true },
+            }),
+        ]);
+        return {
+            totalSessions,
+            activeSessions,
+            completedSessions,
+            cancelledSessions: totalSessions - activeSessions - completedSessions,
+            totalRevenue: totalRevenue._sum.amount || 0,
+            totalEnergyDelivered: totalRevenue._sum.amount || 0,
+            averageRevenuePerSession: completedSessions > 0 ? (totalRevenue._sum.amount || 0) / completedSessions : 0,
+        };
     }
     async getChargingSessionStats(period, startDate, endDate) {
         let dateFilter = {};
@@ -17565,6 +18122,195 @@ let ChargingSessionsService = class ChargingSessionsService {
             period: period || 'custom',
         };
     }
+    async getRevenueAnalytics(period = 'month', groupBy = 'day') {
+        const now = new Date();
+        let start;
+        switch (period) {
+            case 'week':
+                start = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                break;
+            case 'month':
+                start = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                break;
+            case 'year':
+                start = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+                break;
+            default:
+                start = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        }
+        const sessions = await this.prisma.chargingSession.findMany({
+            where: {
+                status: 'COMPLETED',
+                startTime: {
+                    gte: start,
+                },
+            },
+            select: {
+                amount: true,
+                startTime: true,
+            },
+            orderBy: {
+                startTime: 'asc',
+            },
+        });
+        const groupedData = {};
+        sessions.forEach(session => {
+            let key;
+            switch (groupBy) {
+                case 'day':
+                    key = session.startTime.toISOString().split('T')[0];
+                    break;
+                case 'week':
+                    const weekStart = new Date(session.startTime);
+                    weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+                    key = weekStart.toISOString().split('T')[0];
+                    break;
+                case 'month':
+                    key = `${session.startTime.getFullYear()}-${String(session.startTime.getMonth() + 1).padStart(2, '0')}`;
+                    break;
+                default:
+                    key = session.startTime.toISOString().split('T')[0];
+            }
+            groupedData[key] = (groupedData[key] || 0) + session.amount;
+        });
+        return {
+            period,
+            groupBy,
+            data: Object.entries(groupedData).map(([date, revenue]) => ({
+                date,
+                revenue: parseFloat(revenue.toFixed(2)),
+            })),
+            totalRevenue: sessions.reduce((sum, session) => sum + session.amount, 0),
+        };
+    }
+    async getChargingSessionsByCustomer(customerId, page = 1, limit = 10) {
+        const skip = (page - 1) * limit;
+        const [sessions, total] = await Promise.all([
+            this.prisma.chargingSession.findMany({
+                where: { customerId },
+                skip,
+                take: limit,
+                orderBy: { startTime: 'desc' },
+                include: {
+                    bike: {
+                        select: {
+                            id: true,
+                            serialNumber: true,
+                            brand: true,
+                            model: true,
+                        },
+                    },
+                },
+            }),
+            this.prisma.chargingSession.count({
+                where: { customerId },
+            }),
+        ]);
+        const totalPages = Math.ceil(total / limit);
+        return {
+            items: sessions,
+            total,
+            page,
+            limit,
+            totalPages,
+            hasNext: page < totalPages,
+            hasPrev: page > 1,
+        };
+    }
+    async getChargingSessionsByBike(bikeId, page = 1, limit = 10) {
+        const skip = (page - 1) * limit;
+        const [sessions, total] = await Promise.all([
+            this.prisma.chargingSession.findMany({
+                where: { bikeId },
+                skip,
+                take: limit,
+                orderBy: { startTime: 'desc' },
+                include: {
+                    customer: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                            email: true,
+                        },
+                    },
+                },
+            }),
+            this.prisma.chargingSession.count({
+                where: { bikeId },
+            }),
+        ]);
+        const totalPages = Math.ceil(total / limit);
+        return {
+            items: sessions,
+            total,
+            page,
+            limit,
+            totalPages,
+            hasNext: page < totalPages,
+            hasPrev: page > 1,
+        };
+    }
+    async getChargingSessionReports(filters) {
+        const whereConditions = {};
+        if (filters.startDate || filters.endDate) {
+            whereConditions.startTime = {};
+            if (filters.startDate) {
+                whereConditions.startTime.gte = new Date(filters.startDate);
+            }
+            if (filters.endDate) {
+                whereConditions.startTime.lte = new Date(filters.endDate);
+            }
+        }
+        if (filters.status) {
+            whereConditions.status = filters.status;
+        }
+        if (filters.customerId) {
+            whereConditions.customerId = filters.customerId;
+        }
+        if (filters.bikeId) {
+            whereConditions.bikeId = filters.bikeId;
+        }
+        const sessions = await this.prisma.chargingSession.findMany({
+            where: whereConditions,
+            include: {
+                customer: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        email: true,
+                    },
+                },
+                bike: {
+                    select: {
+                        id: true,
+                        serialNumber: true,
+                        brand: true,
+                        model: true,
+                    },
+                },
+            },
+            orderBy: { startTime: 'desc' },
+        });
+        const sessionsWithTransactions = sessions.map(session => ({
+            ...session,
+            transaction: {
+                id: `txn_${session.id}`,
+                amount: session.amount,
+                status: session.status === 'COMPLETED' ? 'SUCCESS' : session.status === 'CANCELLED' ? 'FAILED' : 'PENDING',
+                paymentMethod: 'WALLET',
+                transactionTime: session.endTime || session.startTime,
+                reference: `CHG_${session.id}`,
+            }
+        }));
+        return {
+            sessions: sessionsWithTransactions,
+            total: sessions.length,
+            filters,
+            generatedAt: new Date(),
+        };
+    }
 };
 exports.ChargingSessionsService = ChargingSessionsService;
 exports.ChargingSessionsService = ChargingSessionsService = __decorate([
@@ -17588,8 +18334,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.EndChargingSessionDto = exports.StartChargingSessionDto = exports.SearchChargingSessionsDto = exports.UpdateChargingSessionDto = exports.CreateChargingSessionDto = exports.ChargingSessionStatus = void 0;
+exports.PaginatedResponseDto = exports.ChargingSessionResponseDto = exports.EndChargingSessionDto = exports.StartChargingSessionDto = exports.SearchChargingSessionsDto = exports.UpdateChargingSessionDto = exports.CreateChargingSessionDto = exports.ChargingSessionStatus = void 0;
 const class_validator_1 = __webpack_require__(Object(function webpackMissingModule() { var e = new Error("Cannot find module 'class-validator'"); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 const swagger_1 = __webpack_require__(42);
 var ChargingSessionStatus;
@@ -17599,7 +18346,6 @@ var ChargingSessionStatus;
     ChargingSessionStatus["CANCELLED"] = "CANCELLED";
 })(ChargingSessionStatus || (exports.ChargingSessionStatus = ChargingSessionStatus = {}));
 class CreateChargingSessionDto {
-    customerId;
     bikeId;
     amount;
     startTime;
@@ -17607,15 +18353,6 @@ class CreateChargingSessionDto {
     status;
 }
 exports.CreateChargingSessionDto = CreateChargingSessionDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Customer ID for the charging session',
-        example: '507f1f77bcf86cd799439011'
-    }),
-    (0, class_validator_1.IsNotEmpty)({ message: 'Customer ID is required' }),
-    (0, class_validator_1.IsString)({ message: 'Customer ID must be a string' }),
-    __metadata("design:type", String)
-], CreateChargingSessionDto.prototype, "customerId", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: 'Bike ID for the charging session',
@@ -17816,6 +18553,102 @@ __decorate([
     (0, class_validator_1.IsDateString)({}, { message: 'End time must be a valid date string' }),
     __metadata("design:type", String)
 ], EndChargingSessionDto.prototype, "endTime", void 0);
+class ChargingSessionResponseDto {
+    id;
+    customerId;
+    bikeId;
+    amount;
+    startTime;
+    endTime;
+    status;
+    createdAt;
+    updatedAt;
+    customer;
+    bike;
+}
+exports.ChargingSessionResponseDto = ChargingSessionResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Charging session ID' }),
+    __metadata("design:type", String)
+], ChargingSessionResponseDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Customer ID' }),
+    __metadata("design:type", String)
+], ChargingSessionResponseDto.prototype, "customerId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Bike ID' }),
+    __metadata("design:type", String)
+], ChargingSessionResponseDto.prototype, "bikeId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Charging session amount' }),
+    __metadata("design:type", Number)
+], ChargingSessionResponseDto.prototype, "amount", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Charging session start time' }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], ChargingSessionResponseDto.prototype, "startTime", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Charging session end time' }),
+    __metadata("design:type", Object)
+], ChargingSessionResponseDto.prototype, "endTime", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Charging session status' }),
+    __metadata("design:type", String)
+], ChargingSessionResponseDto.prototype, "status", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Charging session creation time' }),
+    __metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], ChargingSessionResponseDto.prototype, "createdAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Charging session last update time' }),
+    __metadata("design:type", typeof (_d = typeof Date !== "undefined" && Date) === "function" ? _d : Object)
+], ChargingSessionResponseDto.prototype, "updatedAt", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Customer information' }),
+    __metadata("design:type", Object)
+], ChargingSessionResponseDto.prototype, "customer", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Bike information' }),
+    __metadata("design:type", Object)
+], ChargingSessionResponseDto.prototype, "bike", void 0);
+class PaginatedResponseDto {
+    items;
+    total;
+    page;
+    limit;
+    totalPages;
+    hasNext;
+    hasPrev;
+}
+exports.PaginatedResponseDto = PaginatedResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'List of items' }),
+    __metadata("design:type", Array)
+], PaginatedResponseDto.prototype, "items", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Total number of items' }),
+    __metadata("design:type", Number)
+], PaginatedResponseDto.prototype, "total", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Current page number' }),
+    __metadata("design:type", Number)
+], PaginatedResponseDto.prototype, "page", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Items per page' }),
+    __metadata("design:type", Number)
+], PaginatedResponseDto.prototype, "limit", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Total number of pages' }),
+    __metadata("design:type", Number)
+], PaginatedResponseDto.prototype, "totalPages", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Whether there is a next page' }),
+    __metadata("design:type", Boolean)
+], PaginatedResponseDto.prototype, "hasNext", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Whether there is a previous page' }),
+    __metadata("design:type", Boolean)
+], PaginatedResponseDto.prototype, "hasPrev", void 0);
 
 
 /***/ }),
