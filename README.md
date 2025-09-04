@@ -48,9 +48,56 @@ A NestJS microservice that manages customer wallets and transactions. It exposes
 │   │   ├── package.json
 │   │   ├── package-lock.json
 │   │   ├── prisma
+│   │   │   └── schema.prisma
 │   │   ├── README.md
 │   │   ├── scripts
+│   │   │   ├── create-admin.ts
+│   │   │   ├── index.ts
+│   │   │   └── seed-charging-sessions.ts
 │   │   ├── src
+│   │   │   ├── app.controller.spec.ts
+│   │   │   ├── app.controller.ts
+│   │   │   ├── app.module.ts
+│   │   │   ├── app.service.ts
+│   │   │   ├── auth
+│   │   │   │   ├── admin-auth.service.ts
+│   │   │   │   ├── auth.controller.ts
+│   │   │   │   ├── auth.module.ts
+│   │   │   │   ├── customer-auth.service.ts
+│   │   │   │   ├── decorators
+│   │   │   │   ├── dto
+│   │   │   │   ├── guards
+│   │   │   │   └── jwt.strategy.ts
+│   │   │   ├── bikes
+│   │   │   │   ├── bikes.controller.ts
+│   │   │   │   ├── bikes.module.ts
+│   │   │   │   ├── bikes.service.ts
+│   │   │   │   └── dto
+│   │   │   ├── charging-sessions
+│   │   │   │   ├── charging-sessions.controller.ts
+│   │   │   │   ├── charging-sessions-grpc.service.ts
+│   │   │   │   ├── charging-sessions.module.ts
+│   │   │   │   ├── charging-sessions.service.ts
+│   │   │   │   └── dto
+│   │   │   ├── common
+│   │   │   │   ├── dto
+│   │   │   │   └── grpc
+│   │   │   ├── customers
+│   │   │   │   ├── customer-profile.controller.ts
+│   │   │   │   ├── customers.controller.ts
+│   │   │   │   ├── customers.module.ts
+│   │   │   │   ├── customers.service.ts
+│   │   │   │   └── dto
+│   │   │   ├── main.ts
+│   │   │   ├── prisma
+│   │   │   │   ├── prisma.module.ts
+│   │   │   │   └── prisma.service.ts
+│   │   │   ├── proto
+│   │   │   │   ├── charging-sessions.proto
+│   │   │   │   └── wallet.proto
+│   │   │   └── wallet-grpc
+│   │   │       ├── wallet-grpc.module.ts
+│   │   │       └── wallet-grpc.service.ts
 │   │   ├── test-wallet-integration.js
 │   │   ├── tsconfig.app.json
 │   │   ├── tsconfig.build.json
@@ -67,9 +114,35 @@ A NestJS microservice that manages customer wallets and transactions. It exposes
 │       ├── package.json
 │       ├── package-lock.json
 │       ├── prisma
+│       │   └── schema.prisma
 │       ├── README.md
 │       ├── scripts
+│       │   └── seed.ts
 │       ├── src
+│       │   ├── app.controller.spec.ts
+│       │   ├── app.controller.ts
+│       │   ├── app.module.ts
+│       │   ├── app.service.ts
+│       │   ├── auth
+│       │   │   ├── auth.module.ts
+│       │   │   ├── guards
+│       │   │   └── jwt-verification.service.ts
+│       │   ├── customer
+│       │   │   ├── customer.controller.ts
+│       │   │   ├── customer.module.ts
+│       │   │   ├── customer.service.ts
+│       │   │   └── dto
+│       │   ├── grpc-main.ts
+│       │   ├── main.ts
+│       │   ├── prisma
+│       │   │   ├── prisma.module.ts
+│       │   │   └── prisma.service.ts
+│       │   ├── proto
+│       │   │   └── wallet.proto
+│       │   └── wallet
+│       │       ├── wallet.controller.ts
+│       │       ├── wallet.module.ts
+│       │       └── wallet.service.ts
 │       ├── test-customer-api.js
 │       ├── test-customer-wallet-apis.js
 │       ├── test-wallet-simple.js
@@ -97,7 +170,7 @@ A NestJS microservice that manages customer wallets and transactions. It exposes
 ├── tsconfig.build.json
 └── tsconfig.json
 
-11 directories, 46 files
+34 directories, 96 files
 
 ```
 
